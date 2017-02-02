@@ -8,7 +8,7 @@ final float vInc = 1,
             sInc =radians(2);
 
 void setup(){
-  size(1500,800);
+  size(1800,900);
   background(0);
   reset();
 }
