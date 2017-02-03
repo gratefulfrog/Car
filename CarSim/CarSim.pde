@@ -37,38 +37,6 @@ void draw(){
   g_car.update(1);
 }
 
-void doTrack(){
-  noStroke();
-  TrackSection ts = new StraightTrack(g_x-Defaults.trackStraightLength,g_y-g_w/2.0,radians(0));
-  ts.display();
-  doArc(g_x,g_y,-HALF_PI,HALF_PI);
-  TrackSection ts1 = new StraightTrack(g_x,g_y+Defaults.trackOuterDiameter/2.0,PI);
-  ts1.display();
-  doArc(g_x-Defaults.trackStraightLength,g_y,HALF_PI,HALF_PI+PI);
-}
-
-void doArc(float x, float y, float start, float stop){
-  float  w = Defaults.trackOuterDiameter,
-         h = Defaults.trackOuterDiameter;
-  fill(Defaults.white);
-  //arc(x,y,w1,h1,start,stop,PIE);
-  arc(x,y,w,h,start,stop);
-  fill(Defaults.black);
-  w -= 2*Defaults.trackWhiteWidth;
-  h -= 2*Defaults.trackWhiteWidth;
-  //arc(x,y,w,h,start,stop,PIE);
-  arc(x,y,w,h,start,stop);
-  fill(Defaults.white);
-  w -= 2*Defaults.trackBlackWidth;
-  h -= 2*Defaults.trackBlackWidth;
-  //arc(x,y,w,h,start,stop,PIE);
-  arc(x,y,w,h,start,stop);
-  fill(Defaults.grey);
-  w -= 2*Defaults.trackWhiteWidth;
-  h -= 2*Defaults.trackWhiteWidth;
-  //arc(x,y,w,h,start,stop,PIE);
-  arc(x,y,w,h,start,stop);
-}
 
 //////  key controls /////////
 
