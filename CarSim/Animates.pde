@@ -136,7 +136,7 @@ class Car{
         dy = 15;
     pushMatrix();
     pushStyle();
-    fill(Defaults.green);
+    fill(Defaults.blue);
     translate(x,y);
     text("Velocity:\t" + round(velocity),0,0);
     translate(0,dy);
