@@ -64,8 +64,8 @@ class Car{
   
   final float len = Defaults.carHieght,
               wid = Defaults.carWidth,
-              dyFrontAxel = -0.2 * len,
-              dyRearAxel = (12.5/15.0 -0.2)* len,
+              dyFrontAxel = -0.255 * len,
+              dyRearAxel = (13.25/15.0)* len + dyFrontAxel,
               dxCenterLine = -0.5 * wid,
               B = dyRearAxel,
               maxSteeringAngle = radians(25),
@@ -85,10 +85,10 @@ class Car{
     fa = new DriveAxel(0,0);
     ra = new DriveAxel(0,B);
     if (ISJS){
-      s = loadShape("CarSim/data/CarBodyLonger.svg");
+      s = loadShape("CarSim/data/CarBodyLongerFilled.svg");
     }
     else{
-      s = loadShape("CarBodyLonger.svg");
+      s = loadShape("CarBodyLongerFilled.svg");
     }
   }
   
@@ -122,7 +122,7 @@ class Car{
     translate(pos[0],pos[1]);
     rotate(heading);
     shapeMode(CENTER);
-    shape(s, 0,-dyFrontAxel+8,wid,len);
+    shape(s, 0,-dyFrontAxel,wid,len);
     pushMatrix();
     rotate(steeringAngle);
     fa.display();
