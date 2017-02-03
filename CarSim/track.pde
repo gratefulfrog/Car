@@ -10,13 +10,14 @@ abstract class TrackSection{
 }
 
  class StraightTrack extends TrackSection{
-   float w = Defaults.trackStraightLength,
-         h = totalWidth;
+   float ww,hh;
    
    StraightTrack(float x,float y,float r){
+     ww = Defaults.trackStraightLength;
+     hh = totalWidth;
      startPoint[0] = x;
      startPoint[1] = y;
-     endPoint[0] = x+w;
+     endPoint[0] = x+ww;
      endPoint[1] = y;
      endRotation =r;
    }
@@ -27,10 +28,10 @@ abstract class TrackSection{
      translate(startPoint[0],startPoint[1]);
      rotate(endRotation);
      fill(Defaults.black);
-     rect(0,0,w,h);
+     rect(0,0,ww,hh);
      fill(Defaults.white);
-     rect(0,0,w,whiteWidth);
-     rect(0,totalWidth-whiteWidth,w,whiteWidth);
+     rect(0,0,ww,whiteWidth);
+     rect(0,totalWidth-whiteWidth,ww,whiteWidth);
      popStyle();
      popMatrix();
    }
