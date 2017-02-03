@@ -146,7 +146,17 @@ class Car{
     translate(0,dy);
     text("Steering Angle:\t" + round(degrees(steeringAngle)%360),0,0);
     translate(0,dy);
-    text("Click the window, then use the Arrow keys, 's', 'p' and 'r' to control the car!",0,0);
+    text("Steering power:\t" + round(degrees(g_sInc)),0,0);
+    translate(0,dy);
+    text("Click the window, then use the Arrow keys and",0,0);
+    translate(0,dy);
+    text("'s' : Steer Straight",0,0);
+    translate(0,dy);
+    text("'p' : Pause",0,0);
+    translate(0,dy);
+    text("'r' : Reset",0,0);
+    translate(0,dy);
+    text("'x/c' : dec/inc Steering Power",0,0);
     
     popStyle();
     popMatrix();

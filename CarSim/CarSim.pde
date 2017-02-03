@@ -8,8 +8,11 @@ final boolean ISJS = true;
 
 Car g_car;
 
-final float g_vInc = 1,
-            g_sInc =radians(5);
+final float g_vInc = 1;
+
+float g_maxS = Defaults.maxSteeringSensitivity,
+      g_sInc = radians(g_maxS);
+
 float   g_x,
         g_y,
         g_w;
@@ -91,6 +94,14 @@ void unCodedKey(){
     case 'r':
     case 'R':
       reset();
+      break;
+    case 'x':
+    case 'X':
+      g_sInc-= radians(1.0);
+      break;
+    case 'c':
+    case 'C':
+      g_sInc+=radians(1.0);
       break;
     default:
       if (!ISJS){

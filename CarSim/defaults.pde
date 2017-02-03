@@ -20,7 +20,7 @@ class Defaults{
   static final float  trackStraightLength =  800 * mm2pix,
                       trackOuterDiameter  =  1400 * mm2pix;
                       
-                    
+  static final float maxSteeringSensitivity = 8;                    
   
   
   static final color  red   = #FF0000,
