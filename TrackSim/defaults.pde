@@ -17,7 +17,7 @@ class Defaults{
   static final float  trackWhiteWidth =  20 * mm2pix,
                       trackBlackWidth =  240 * mm2pix;
                       
-  static final float  trackStraightLength =  800 * mm2pix,
+  static final float  trackStraightLength =  560 * mm2pix,
                       trackOuterDiameter  =  1400 * mm2pix;
                       
                     
