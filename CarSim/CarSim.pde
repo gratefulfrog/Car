@@ -6,10 +6,10 @@
 
 final boolean ISJS = true;
 
-Car car;
+Car g_car;
 
-final float vInc = 1,
-            sInc =radians(2);
+final float g_vInc = 1,
+            g_sInc =radians(5);
 float   g_x,
         g_y,
         g_w;
@@ -23,15 +23,15 @@ void setup(){
 }
 
 void reset(){  
-  car = new Car(g_x-Defaults.trackStraightLength,g_y-g_w/2.0+(Defaults.trackBlackWidth + Defaults.trackWhiteWidth)/2.0,radians(90));
+  g_car = new Car(g_x-Defaults.trackStraightLength,g_y-g_w/2.0+(Defaults.trackBlackWidth + Defaults.trackWhiteWidth)/2.0,radians(90));
 }
 
 void draw(){
   background(Defaults.grey);
   doTrack();
-  car.display();
-  car.displayParams();
-  car.update(1);
+  g_car.display();
+  g_car.displayParams();
+  g_car.update(1);
 }
 
 void doTrack(){
@@ -83,10 +83,10 @@ void unCodedKey(){
   switch(key){
     case 'p':
     case 'P':
-      car.velocitySet(0);
+      g_car.velocitySet(0);
     case 's':
     case 'S':
-      car.steeringAngleSet(0);
+      g_car.steeringAngleSet(0);
       break;
     case 'r':
     case 'R':
@@ -103,16 +103,16 @@ void unCodedKey(){
 void codedKey(){
   switch(keyCode){
     case UP:
-      car.velocityInc(vInc);
+      g_car.velocityInc(g_vInc);
       break;
     case DOWN:
-      car.velocityInc(-vInc);
+      g_car.velocityInc(-g_vInc);
       break;
     case LEFT:
-      car.steeringAngleInc(-sInc);
+      g_car.steeringAngleInc(-g_sInc);
       break;
     case RIGHT:
-      car.steeringAngleInc(sInc);
+      g_car.steeringAngleInc(g_sInc);
       break;
   }
 }
