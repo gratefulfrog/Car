@@ -4,7 +4,7 @@
 
 
 
-final boolean ISJS = false;
+final boolean ISJS = true;
 
 Car car;
 
