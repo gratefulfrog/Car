@@ -7,6 +7,7 @@
 final boolean ISJS = true;
 
 Car g_car;
+PGraphics g_track;
 
 final float g_vInc = 1;
 
@@ -19,19 +20,23 @@ float   g_x,
         
 void setup(){
   size(1800,900);
-   g_x = width/2.0 + Defaults.trackStraightLength/2.0;
-   g_y = height/2.0;
-   g_w = Defaults.trackOuterDiameter;
+  g_x = width/2.0 + Defaults.trackStraightLength/2.0;
+  g_y = height/2.0;
+  g_w = Defaults.trackOuterDiameter;
+  g_track = createGraphics(1800,900);
+  do_ImageTrack(g_track);
   reset();
 }
 
 void reset(){  
   g_car = new Car(g_x-Defaults.trackStraightLength,g_y-g_w/2.0+(Defaults.trackBlackWidth + Defaults.trackWhiteWidth)/2.0,radians(90));
+ 
 }
 
 void draw(){
-  background(Defaults.grey);
-  doTrack();
+  //background(Defaults.grey);
+  //doTrack();
+  image(g_track,0,0);
   g_car.display();
   g_car.displayParams();
   g_car.update(1);
