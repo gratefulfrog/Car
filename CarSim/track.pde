@@ -2,7 +2,8 @@
 // these need to be outside all classes for some incomprehensible javascript reason!
 // pixel dimnsions
 final float whiteWidth = Defaults.trackWhiteWidth,
-            totalWidth = whiteWidth * 2 + Defaults.trackBlackWidth;
+            totalWidth = whiteWidth * 2 + Defaults.trackBlackWidth,
+            Defaults_trackOuterDiameter = Defaults.trackOuterDiameter;
   
 
 abstract class TrackSection{  
@@ -51,8 +52,8 @@ class StraightSection extends TrackSection{
 
 class CurvedSection extends TrackSection {
   // only works for clockwise curves!
-  static final float  dia = Defaults.trackOuterDiameter,
-                      rad = dia/2;
+  final float  dia = Defaults_trackOuterDiameter,
+               rad = dia/2;
   float start,
         stop;
   
