@@ -4,7 +4,7 @@
 
 
 
-final boolean ISJS = true;
+final boolean ISJS = false;
 
 Car g_car;
 

@@ -1,7 +1,11 @@
-abstract class TrackSection{
-  final float whiteWidth = Defaults.trackWhiteWidth,
-              totalWidth = Defaults.trackWhiteWidth * 2 + Defaults.trackBlackWidth;
+
+// these need to be outside all classes for some incomprehensible javascript reason!
+// pixel dimnsions
+final float whiteWidth = Defaults.trackWhiteWidth,
+            totalWidth = whiteWidth * 2 + Defaults.trackBlackWidth;
   
+
+abstract class TrackSection{  
   float // startPoint[] =  new float[2], always 0,0
         endPoint[] =  new float[2],
         endRotation;
@@ -27,8 +31,8 @@ abstract class TrackSection{
 class StraightSection extends TrackSection{
   float xLen;
  
-  StraightSection(float len){
-    xLen = len;
+  StraightSection(float lenMM){
+    xLen = lenMM * Defaults.mm2pix;
     endPoint[0] = xLen;
     endPoint[1] = 0;
     endRotation = 0;
@@ -44,13 +48,14 @@ class StraightSection extends TrackSection{
     popStyle();
   }
 }
- 
+
 class CurvedSection extends TrackSection {
+  // only works for clockwise curves!
   static final float  dia = Defaults.trackOuterDiameter,
                       rad = dia/2;
   float start,
         stop;
-        
+  
   CurvedSection(float star, float sto){
     start = star;
     stop  = sto;
@@ -80,11 +85,12 @@ class CurvedSection extends TrackSection {
   }  
 }
 
-
- void doTrack(){
+void doTrack(){
   noStroke();
-  TrackSection ts = new StraightSection(Defaults.trackStraightLength);
-  TrackSection arc = new CurvedSection(-HALF_PI,HALF_PI);
+  TrackSection ts = new StraightSection(Defaults.trackStraightLengthMM);
+  TrackSection arc180 = new CurvedSection(-HALF_PI,HALF_PI);
+  TrackSection arcR90 = new CurvedSection(-HALF_PI,0);
+  // not ready! TrackSection arcL90 = new CurvedSection(0,-HALF_PI);
   pushMatrix();
   // move to starting point!
   translate(g_x-Defaults.trackStraightLength,
@@ -92,7 +98,37 @@ class CurvedSection extends TrackSection {
   ts.display();
   translate(ts.nextXInc(),ts.nextYInc());
   rotate(ts.nextAlpha());
-  arc.display();
+  arc180.display();
+  translate(arc180.nextXInc(),arc180.nextYInc());
+  rotate(arc180.nextAlpha());
+  ts.display();
+  translate(ts.nextXInc(),ts.nextYInc());
+  rotate(ts.nextAlpha());
+  arc180.display();
+  popMatrix();
+}
+
+/*
+void doTrack(){
+  noStroke();
+  TrackSection ts = new StraightSection(Defaults.trackStraightLength);
+  TrackSection arc180 = new CurvedSection(-HALF_PI,HALF_PI);
+  TrackSection arcR90 = new CurvedSection(-HALF_PI,0);
+  TrackSection arcL90 = new CurvedSection(0,HALF_PI);
+  pushMatrix();
+  // move to starting point!
+  translate(g_x-Defaults.trackStraightLength,
+            g_y-g_w/2.0); 
+  //arcR90.display();
+  translate(arcR90.nextXInc(),arcR90.nextYInc());
+  rotate(arcR90.nextAlpha());
+  //rotate(arcR90.nextAlpha());
+  //print(degrees(arcR90.nextAlpha()));
+  arc(0,0,100,100,0,-HALF_PI); 
+  stroke(0);
+  line(0,0,500,0);
+  //arcL90.display();
+  //exit();
   translate(arc.nextXInc(),arc.nextYInc());
   rotate(arc.nextAlpha());
   ts.display();
@@ -100,5 +136,5 @@ class CurvedSection extends TrackSection {
   rotate(ts.nextAlpha());
   arc.display();
   popMatrix();
- }
-  
+}
+*/
