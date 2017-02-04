@@ -2,8 +2,6 @@
  * Autonomous Car Simulation and DEvt. platform
  */
 
-
-
 final boolean ISJS = true;
 
 Car g_car;
@@ -12,7 +10,11 @@ PGraphics g_track;
 final float g_vInc = 1;
 
 float g_maxS = Defaults.maxSteeringSensitivity,
-      g_sInc = radians(g_maxS);
+      g_sInc = radians(Defaults.stdSteeringSensitivity),
+      g_saInc = radians(g_maxS*0.01);
+      
+boolean g_steerAngle = true;
+
 
 float   g_x,
         g_y,
@@ -37,7 +39,7 @@ void draw(){
   background(Defaults.grey);
   doTrack();
   // too slow in firfox!
-  // image(g_track,0,0);
+  //image(g_track,0,0);
   g_car.display();
   g_car.displayParams();
   g_car.update(1);
@@ -64,6 +66,7 @@ void unCodedKey(){
     case 's':
     case 'S':
       g_car.steeringAngleSet(0);
+      g_car.steeringAngularVelocitySet(0);
       break;
     case 'r':
     case 'R':
@@ -76,6 +79,11 @@ void unCodedKey(){
     case 'c':
     case 'C':
       g_sInc+=radians(1.0);
+      break;
+    case 'a':
+    case 'A':
+      g_steerAngle = !g_steerAngle;
+      g_car.steeringAngularVelocitySet(0);
       break;
     default:
       if (!ISJS){
@@ -94,10 +102,19 @@ void codedKey(){
       g_car.velocityInc(-g_vInc);
       break;
     case LEFT:
-      g_car.steeringAngleInc(-g_sInc);
+      if(g_steerAngle){
+        g_car.steeringAngleInc(-g_sInc);
+      }
+      else{
+        g_car.steeringAngularVelocityInc(-g_saInc);
+      }
       break;
     case RIGHT:
-      g_car.steeringAngleInc(g_sInc);
-      break;
+      if(g_steerAngle){
+        g_car.steeringAngleInc(g_sInc);
+      }
+      else{
+        g_car.steeringAngularVelocityInc(g_saInc);
+      }break;
   }
 }

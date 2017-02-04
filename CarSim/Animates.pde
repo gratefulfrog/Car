@@ -69,12 +69,14 @@ class Car{
               dxCenterLine = -0.5 * wid,
               B = dyRearAxel,
               maxSteeringAngle = radians(25),
+              maxSteeringAngularVelocity = radians(10),  // radians par dt
               maxVelocity =  100;  //cm par second
               
   float heading = 0,
         velocity = 0,
         pos[] = {0,0},
-        steeringAngle = 0;
+        steeringAngle = 0,
+        steeringAngularVelocity = 0;
 
   final color carColor = Defaults.red;
   
@@ -98,7 +100,12 @@ class Car{
   void steeringAngleInc(float inc){
     steeringAngleSet(inc+steeringAngle);
   }
-  
+  void steeringAngularVelocitySet(float a){
+    steeringAngularVelocity = max(-maxSteeringAngularVelocity,min(a,maxSteeringAngularVelocity));
+  }
+  void steeringAngularVelocityInc(float inc){
+    steeringAngularVelocitySet(inc+steeringAngularVelocity);
+  }
   void velocitySet(float a){
     velocity = max(-maxVelocity,min(a,maxVelocity));
   }
@@ -107,6 +114,8 @@ class Car{
   }
   
   void update(float dt){
+    // update steering angle
+    steeringAngleInc(steeringAngularVelocity*dt);
     final float R = B/abs(sin(steeringAngle)),
                 dc = velocity * dt,
                 dx = dc * sin(steeringAngle+heading),
@@ -122,6 +131,7 @@ class Car{
     translate(pos[0],pos[1]);
     rotate(heading);
     shapeMode(CENTER);
+    displaySensor();
     shape(s, 0,-dyFrontAxel,wid,len);
     pushMatrix();
     rotate(steeringAngle);
@@ -130,6 +140,48 @@ class Car{
     ra.display();
     popMatrix();
   }
+  
+  void displaySensor(){
+    pushStyle();
+    strokeWeight(2);
+    stroke(Defaults.targetColor);
+    
+    displaySensorIntercepts();
+    line(-Defaults.sensorHalfWidth,0,Defaults.sensorHalfWidth,0);
+    popStyle();
+  }
+  
+  void displaySensorIntercepts(){
+    int li = -Defaults.sensorInterceptLimit,
+        ri =  Defaults.sensorInterceptLimit;
+    for (int i = 0;i<Defaults.sensorInterceptLimit; i++){
+      float ang = heading-HALF_PI;
+      int x = round(pos[0] - i*sin(ang)),
+          y = round(pos[1] + i*cos(ang));
+      color c = get(x,y);      
+      if(c != color(0)){
+        ri = i;
+        break;
+      }
+    }
+    for (int i = 0;i>-Defaults.sensorInterceptLimit; i--){
+      float ang = heading-HALF_PI;
+      int x = round(pos[0] - i*sin(ang)),
+          y = round(pos[1] + i*cos(ang));
+      color c = get(x,y);      
+      if(c != color(0)){
+        li = i;
+        break;
+      } 
+    }
+    pushStyle();
+    stroke(Defaults.green);
+    strokeWeight(4);
+    line(li,-Defaults.sensorInterceptHalfLength,li,Defaults.sensorInterceptHalfLength);
+    line(ri,-Defaults.sensorInterceptHalfLength,ri,Defaults.sensorInterceptHalfLength);
+    popStyle();  
+  }
+  
   void displayParams(){
     int x = 10,
         y = 20,
@@ -146,6 +198,13 @@ class Car{
     translate(0,dy);
     text("Steering Angle:\t" + round(degrees(steeringAngle)%360),0,0);
     translate(0,dy);
+    pushStyle();
+    if (!g_steerAngle){
+      fill(Defaults.green);
+    }
+    text("Steering Angular Velocity:\t" + nf(degrees(steeringAngularVelocity),0,2),0,0);
+    popStyle();
+    translate(0,dy);
     text("Steering power:\t" + round(degrees(g_sInc)),0,0);
     translate(0,dy);
     text("Click the window, then use the Arrow keys and",0,0);
@@ -157,7 +216,8 @@ class Car{
     text("'r' : Reset",0,0);
     translate(0,dy);
     text("'x/c' : dec/inc Steering Power",0,0);
-    
+    translate(0,dy);
+    text("'a' : toggle angular velocity steering",0,0);
     popStyle();
     popMatrix();
   }
@@ -166,32 +226,4 @@ class Car{
 float formatHeading(float h){
   float res = h %360;
   return res<0 ? 360 + res : res;
-}
-
-class LongTail{
-  final float targetWidth = 10;
-  float coords[][] =  new float[Defaults.tailLength][2];
-  int nbCoords = 0;
-  
-  LongTail(){}
-  
-  void update(float xVal, float yVal){
-    for (int i=Defaults.tailLength-1;i>0;i--){
-      coords[i][0]=coords[i-1][0];
-      coords[i][1]=coords[i-1][1];
-    }
-    coords[0][0]=xVal;
-    coords[0][1]=yVal;
-    nbCoords=min(Defaults.tailLength,++nbCoords);
-  }
-  void display (){
-    pushStyle();
-    fill(Defaults.targetColor);
-    stroke(Defaults.targetColor);
-    ellipseMode(CENTER);
-    for (int i=1;i<nbCoords;i++){
-      ellipse(coords[i][0],coords[i][1],targetWidth/(0.9*(i+1)),targetWidth/(0.9*(i+1)));
-    }
-    popStyle();
-  }
 }
