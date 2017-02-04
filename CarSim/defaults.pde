@@ -1,4 +1,4 @@
-class Defaults{
+static class Defaults{
   // main windows defaults:
   static final int windowWidth  = 1500,
                    windowHeight = 800;
@@ -17,8 +17,10 @@ class Defaults{
   static final float  trackWhiteWidth =  20 * mm2pix,
                       trackBlackWidth =  240 * mm2pix;
                       
-  static final float  trackStraightLength =  800 * mm2pix,
-                      trackOuterDiameter  =  1400 * mm2pix;
+  static final float  trackStraightLengthMM = 1500,
+                      trackStraightLength   = trackStraightLengthMM * mm2pix,
+                      trackOuterDiameterMM  = 1400,
+                      trackOuterDiameter    = trackOuterDiameterMM * mm2pix;
                       
   static final float maxSteeringSensitivity = 8;                    
   
@@ -31,6 +33,4 @@ class Defaults{
                       white = #FFFFFF,
                       targetColor = red,
                       wheelColor = blue;
-            
-  Defaults(){};
 }
