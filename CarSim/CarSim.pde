@@ -34,9 +34,10 @@ void reset(){
 }
 
 void draw(){
-  //background(Defaults.grey);
-  //doTrack();
-  image(g_track,0,0);
+  background(Defaults.grey);
+  doTrack();
+  // too slow in firfox!
+  // image(g_track,0,0);
   g_car.display();
   g_car.displayParams();
   g_car.update(1);
