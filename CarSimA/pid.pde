@@ -40,7 +40,7 @@ class PID{
         y = 60;
     textAlign(LEFT,TOP);
     fill(textColor);
-    String sVec[] = {"Kp: " + nf(Kp.get(),0,4), "Ki: " + nf(Ki.get(),0,4),  "Kd: " + nf(Kd.get(),0,4)};
+    String sVec[] = {"Kp: " + nf(Kp.get(),1,4), "Ki: " + nf(Ki.get(),1,4),  "Kd: " + nf(Kd.get(),1,4)};
     for (int i=0;i<3;i++){
         text(sVec[i],x,y+i*60);
     }
