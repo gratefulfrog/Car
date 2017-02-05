@@ -63,9 +63,7 @@ class CurvedSection extends TrackSection {
     start = star;
     stop  = sto;
     endPoint[0] = right ? (rad * cos(stop)) : (rad-Defaults.totalWidth) *cos(-stop); // + (right ? 0 : -Defaults.totalWidth);
-    println(endPoint[0]);
     endPoint[1] = (right? rad - rad * sin(-stop): (-rad+Defaults.totalWidth)-(-rad+Defaults.totalWidth) * sin(-stop)) ;
-    println(endPoint[1]);
     endRotation = right? stop-start : start-stop;
   }
   
