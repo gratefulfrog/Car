@@ -2,7 +2,7 @@
  * Autonomous Car Simulation and DEvt. platform
  */
 
-final boolean ISJS = false;
+final boolean ISJS = true;
 
 App app;
         
