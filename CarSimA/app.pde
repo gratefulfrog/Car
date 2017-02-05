@@ -42,12 +42,11 @@ class App {
     pushStyle();
     controller.display();
     
-    //pushMatrix();
+    text("PID Control",230,15);
     for(int i=0;i< pbRVec.length;i++){ 
       pbRVec[i].display();
     }
     popStyle();
-    //popMatrix();
     
     car.displayParams(steerAngle);
     
