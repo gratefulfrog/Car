@@ -10,21 +10,36 @@ class App {
   float maxS = Defaults.maxSteeringSensitivity,
         sInc = radians(Defaults.stdSteeringSensitivity),
         saInc = radians(maxS*0.01);
+ 
   final float vInc = 1;
   
-  final float trackXOffset = 150;
-        
+  final float trackXOffsetCurvy = 100,
+              trackXOffsetOval   = 160,
+              trackYOffsetCurvy = 30,
+              trackYOffsetOval  = 300;
+  //final float curvyMM2PX =  0.25,
+    //          MM2PX_OVAL  = 0.5;
   //PGraphics g_track;
 
   PidDefaults pidDefaults;
   PID controller;
   PushButtonAdderRow pbRVec[];
-  //PushButton lb,
-  //           ab;
   
   App(){
-    x = width/2.0 + Defaults.trackStraightLength/2.0 + trackXOffset;
-    y = height/2.0;
+    float xOffset,
+          yOffset;
+    if(CURVY_TRACK){
+      //Defaults.mm2pix = curvyMM2PX;
+      xOffset = trackXOffsetCurvy;
+      yOffset = trackYOffsetCurvy;
+    }
+    else{
+      //Defaults.mm2pix = MM2PX_OVAL;
+      xOffset = trackXOffsetOval;
+      yOffset = trackYOffsetOval;
+    }
+    x = width/2.0 + Defaults.trackStraightLength/2.0 + xOffset;
+    y = height/4.0 + yOffset;
     w = Defaults.trackOuterDiameter;
     pidDefaults = new PidDefaults();
     //g_track = createGraphics(1800,900);
@@ -34,8 +49,13 @@ class App {
   void display(long count){
     // first display the bg & track
     background(Defaults.grey);
-    doTrack(x,y,w);
-    // too slow in firfox!
+     if(CURVY_TRACK){
+      doCurvyTrack(x,y,w);
+     }
+     else{
+       doOvalTrack(x,y,w);
+     }  
+     // too slow in firefox!
     //image(g_track,0,0);
   
     // then display the values and buttons & parameters
