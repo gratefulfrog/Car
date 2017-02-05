@@ -24,11 +24,11 @@ abstract class PushButton{
       fi=ffi;
       av = addVal;
       if(ISJS){
-        displayText = new String(label + "\f\n" + nfp(av,0,0));
+        displayText = new String(label + "\f\n" + nfp(av,1,0));
 
       }
       else{
-        displayText = new String(label + '\n' + nfp(av,0,0));
+        displayText = new String(label + '\n' + nfp(av,1,0));
       }  
   }
         
