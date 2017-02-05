@@ -23,7 +23,13 @@ abstract class PushButton{
       lastClickTime = millis();
       fi=ffi;
       av = addVal;
-      displayText = new String(label + '\n' + nfp(av,0,0));
+      if(ISJS){
+        displayText = new String(label + "\f\n" + nfp(av,0,0));
+
+      }
+      else{
+        displayText = new String(label + '\n' + nfp(av,0,0));
+      }  
   }
         
   void display(){
@@ -133,7 +139,12 @@ class PushButtonLogMultiplier extends PushButtonMultiplier{
     outHigh= av;
     outMid = 1.0;
     fieldName = label;
-    displayText = fieldName + '\n' + fi.get();
+    if (ISJS){
+        displayText = fieldName + "\f\n" + fi.get();
+    }
+    else{
+      displayText = fieldName + '\n' + fi.get();
+    }
   }
   float mapMouse(){
     float  offset= mouseX - (x-pbW/2.0);
@@ -152,10 +163,20 @@ class PushButtonLogMultiplier extends PushButtonMultiplier{
   }
   
   void display(){
-    displayText = fieldName + '\n' + nf(fi.get(),0,2);
-    super.display();
+     if (ISJS){
+      displayText = fieldName + "\f\n" + nf(fi.get(),0,2);
+     }
+     else{
+      displayText = fieldName + '\n' + nf(fi.get(),0,2);
+     }
+     super.display();
   }
   void updateLabel(){
-    displayText = fieldName + '\n' + nf(fi.get()*mapMouse(),0,2);  
+    if (ISJS){
+      displayText = fieldName + "\f\n" + nf(fi.get()*mapMouse(),0,2);  
+    }
+    else{
+      displayText = fieldName + '\n' + nf(fi.get()*mapMouse(),0,2);  
+    }
   }    
 }
