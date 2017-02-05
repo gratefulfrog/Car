@@ -187,7 +187,7 @@ class Car{
   
   void displayParams(boolean steerAngle){
     int x = 10,
-        y = height - 11 *20,
+        y = height - 12 *20,
         dy = 15;
     pushMatrix();
     pushStyle();
@@ -230,6 +230,8 @@ class Car{
     if (app.manualSteering){
       fill(Defaults.green);
     }text("'M' : toggle manual steering",0,0);
+    translate(0,dy);
+    text("Mouse Click to change tracks",0,0);
     popStyle();
     popStyle();
     popMatrix();

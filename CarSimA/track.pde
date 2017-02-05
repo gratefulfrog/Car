@@ -1,10 +1,6 @@
 
 // these need to be outside all classes for some incomprehensible javascript reason!
 // pixel dimnsions
-final float whiteWidth = Defaults.trackWhiteWidth,
-            totalWidth = whiteWidth * 2 + Defaults.trackBlackWidth,
-            Defaults_trackOuterDiameter = Defaults.trackOuterDiameter;
-  
 
 abstract class TrackSection{  
   float // startPoint[] =  new float[2], always 0,0
@@ -25,11 +21,6 @@ abstract class TrackSection{
   }
 }
 
-/* for track, we translate and rotate before disply, so th the track is 
- * always laid relative to zero
- */
-
-
 class StraightSection extends TrackSection{
   float xLen;
  
@@ -43,36 +34,39 @@ class StraightSection extends TrackSection{
   void display(){
     pushStyle();
     fill(Defaults.black);
-    rect(0,0,xLen,totalWidth);
+    rect(0,0,xLen,Defaults.totalWidth);
     fill(Defaults.white);
-    rect(0,0,xLen,whiteWidth);
-    rect(0,totalWidth-whiteWidth,xLen,whiteWidth);
+    rect(0,0,xLen,Defaults.trackWhiteWidth);
+    rect(0,Defaults.totalWidth-Defaults.trackWhiteWidth,xLen,Defaults.trackWhiteWidth);
     popStyle();
   }
   void displayP(PGraphics pg){
     pg.pushStyle();
     pg.fill(Defaults.black);
-    pg.rect(0,0,xLen,totalWidth);
+    pg.rect(0,0,xLen,Defaults.totalWidth);
     pg.fill(Defaults.white);
-    pg.rect(0,0,xLen,whiteWidth);
-    pg.rect(0,totalWidth-whiteWidth,xLen,whiteWidth);
+    pg.rect(0,0,xLen,Defaults.trackWhiteWidth);
+    pg.rect(0,Defaults.totalWidth-Defaults.trackWhiteWidth,xLen,Defaults.trackWhiteWidth);
     pg.popStyle();
   }
 }
 
 class CurvedSection extends TrackSection {
-  // only works for clockwise curves!
-  final float  dia = Defaults_trackOuterDiameter,
+  final float  dia = Defaults.trackOuterDiameter,
                rad = dia/2;
   float start,
         stop;
+  boolean right;
   
-  CurvedSection(float star, float sto){
+  CurvedSection(float star, float sto,  boolean rt){
+    right = rt;
     start = star;
     stop  = sto;
-    endPoint[0] = rad * cos(stop);
-    endPoint[1] = rad+rad * sin(stop);
-    endRotation = stop-start;
+    endPoint[0] = right ? (rad * cos(stop)) : (rad-Defaults.totalWidth) *cos(-stop); // + (right ? 0 : -Defaults.totalWidth);
+    println(endPoint[0]);
+    endPoint[1] = (right? rad - rad * sin(-stop): (-rad+Defaults.totalWidth)-(-rad+Defaults.totalWidth) * sin(-stop)) ;
+    println(endPoint[1]);
+    endRotation = right? stop-start : start-stop;
   }
   
   void display(){
@@ -81,6 +75,10 @@ class CurvedSection extends TrackSection {
     translate(0,rad);
     float d = dia;
     fill(Defaults.white);
+    if (!right){
+      translate(0,-(Defaults.trackOuterDiameter-Defaults.totalWidth));
+      scale(1,-1);
+    }
     arc(0,0,d,d,start,stop);
     fill(Defaults.black);
     d -= 2*Defaults.trackWhiteWidth;
@@ -100,6 +98,10 @@ class CurvedSection extends TrackSection {
     pg.translate(0,rad);
     float d = dia;
     pg.fill(Defaults.white);
+     if (!right){
+      pg.translate(0,-(Defaults.trackOuterDiameter-Defaults.totalWidth));
+      pg.scale(1,-1);
+    }
     pg.arc(0,0,d,d,start,stop);
     pg.fill(Defaults.black);
     d -= 2*Defaults.trackWhiteWidth;
@@ -115,13 +117,15 @@ class CurvedSection extends TrackSection {
   }  
 }
 
-void doTrack(float x, float y, float w){
+void doOvalTrack(float x, float y, float w){
   noStroke();
   TrackSection ts = new StraightSection(Defaults.trackStraightLengthMM);
-  TrackSection arc180 = new CurvedSection(-HALF_PI,HALF_PI);
-  TrackSection arcR90 = new CurvedSection(-HALF_PI,0);
-  // not ready! TrackSection arcL90 = new CurvedSection(0,-HALF_PI);
+  TrackSection arc180 = new CurvedSection(-HALF_PI,HALF_PI,true);
+  TrackSection arcR90 = new CurvedSection(-HALF_PI,0,true);
   pushMatrix();
+  pushStyle();
+  noStroke();
+  
   // move to starting point!
   translate(x-Defaults.trackStraightLength,
             y-w/2.0); 
@@ -138,15 +142,18 @@ void doTrack(float x, float y, float w){
   popMatrix();
 }
 
-void  do_ImageTrack(PGraphics pg,float x, float y, float w){
+void  do_ImageOvalTrack(PGraphics pg,float x, float y, float w){
   pg.beginDraw();
   pg.background(Defaults.grey);
-  pg.noStroke();
+
   TrackSection ts = new StraightSection(Defaults.trackStraightLengthMM);
-  TrackSection arc180 = new CurvedSection(-HALF_PI,HALF_PI);
-  TrackSection arcR90 = new CurvedSection(-HALF_PI,0);
-  // not ready! TrackSection arcL90 = new CurvedSection(0,-HALF_PI);
+  TrackSection arc180 = new CurvedSection(-HALF_PI,HALF_PI,true);
+  TrackSection arcR90 = new CurvedSection(-HALF_PI,0,true);
+
   pg.pushMatrix();
+  pg.pushStyle();
+  pg.noStroke();
+  
   // move to starting point!
   pg.translate(x-Defaults.trackStraightLength,
                y-w/2.0); 
@@ -160,37 +167,136 @@ void  do_ImageTrack(PGraphics pg,float x, float y, float w){
   pg.translate(ts.nextXInc(),ts.nextYInc());
   pg.rotate(ts.nextAlpha());
   arc180.displayP(pg);
+ 
+  pg.popStyle();
   pg.popMatrix();
   pg.endDraw();
 }
 
-/*
-void doTrack(){
-  noStroke();
-  TrackSection ts = new StraightSection(Defaults.trackStraightLength);
-  TrackSection arc180 = new CurvedSection(-HALF_PI,HALF_PI);
-  TrackSection arcR90 = new CurvedSection(-HALF_PI,0);
-  TrackSection arcL90 = new CurvedSection(0,HALF_PI);
+void doCurvyTrack(float x, float y, float w){
+  TrackSection ts = new StraightSection(Defaults.trackOuterDiameterMM-Defaults.totalWidth/Defaults.mm2pix);
+  TrackSection tsHalf = new StraightSection(0.5*Defaults.trackOuterDiameterMM-Defaults.totalWidth/Defaults.mm2pix);
+  TrackSection arcR180 = new CurvedSection(-HALF_PI,HALF_PI,true);
+  TrackSection arcL180 = new CurvedSection(-HALF_PI,HALF_PI,false);
+  TrackSection arcR90 = new CurvedSection(-HALF_PI,0,true);
+  TrackSection arcR45 = new CurvedSection(-HALF_PI,-HALF_PI/2.0,true);
+  TrackSection arcL45 = new CurvedSection(-HALF_PI,-HALF_PI/2.0,false);
+  TrackSection arcL90 = new CurvedSection(-HALF_PI,0,false);
+  
   pushMatrix();
+  pushStyle();
+  noStroke();
+  
   // move to starting point!
-  translate(g_x-Defaults.trackStraightLength,
-            g_y-g_w/2.0); 
-  //arcR90.display();
+  //translate(x,y);
+   translate(x-Defaults.trackStraightLength,
+            y-w/2.0); 
+  
+  arcR90.display();
   translate(arcR90.nextXInc(),arcR90.nextYInc());
   rotate(arcR90.nextAlpha());
-  //rotate(arcR90.nextAlpha());
-  //print(degrees(arcR90.nextAlpha()));
-  arc(0,0,100,100,0,-HALF_PI); 
-  stroke(0);
-  line(0,0,500,0);
-  //arcL90.display();
-  //exit();
-  translate(arc.nextXInc(),arc.nextYInc());
-  rotate(arc.nextAlpha());
+  
+  arcL180.display();
+  translate(arcL180.nextXInc(),arcL180.nextYInc());
+  rotate(arcL180.nextAlpha());
+  
+  arcR180.display();
+  translate(arcR180.nextXInc(),arcR180.nextYInc());
+  rotate(arcR180.nextAlpha());
+  
   ts.display();
   translate(ts.nextXInc(),ts.nextYInc());
   rotate(ts.nextAlpha());
-  arc.display();
+  
+  arcR90.display();
+  translate(arcR90.nextXInc(),arcR90.nextYInc());
+  rotate(arcR90.nextAlpha());
+
+  ts.display();
+  translate(ts.nextXInc(),ts.nextYInc());
+  rotate(ts.nextAlpha());
+  
+  ts.display();
+  translate(ts.nextXInc(),ts.nextYInc());
+  rotate(ts.nextAlpha());
+  
+  arcR90.display();
+  translate(arcR90.nextXInc(),arcR90.nextYInc());
+  rotate(arcR90.nextAlpha());
+  
+  ts.display();
+  translate(ts.nextXInc(),ts.nextYInc());
+  rotate(ts.nextAlpha());
+  arcR90.display();
+  translate(arcR90.nextXInc(),arcR90.nextYInc());
+  rotate(arcR90.nextAlpha());
+  
+  popStyle();
   popMatrix();
 }
-*/
+
+void  doImageCurvyTrack(PGraphics pg,float x, float y, float w){
+  pg.beginDraw();
+  pg.background(Defaults.grey);
+  
+  TrackSection ts = new StraightSection(Defaults.trackOuterDiameterMM-Defaults.totalWidth/Defaults.mm2pix);
+  TrackSection tsHalf = new StraightSection(0.5*Defaults.trackOuterDiameterMM-Defaults.totalWidth/Defaults.mm2pix);
+  TrackSection arcR180 = new CurvedSection(-HALF_PI,HALF_PI,true);
+  TrackSection arcL180 = new CurvedSection(-HALF_PI,HALF_PI,false);
+  TrackSection arcR90 = new CurvedSection(-HALF_PI,0,true);
+  TrackSection arcR45 = new CurvedSection(-HALF_PI,-HALF_PI/2.0,true);
+  TrackSection arcL45 = new CurvedSection(-HALF_PI,-HALF_PI/2.0,false);
+  TrackSection arcL90 = new CurvedSection(-HALF_PI,0,false);
+  
+  pg.pushMatrix();
+  pg.pushStyle();
+  pg.noStroke();
+  
+  // move to starting point!
+  pg.translate(x,y);
+  
+  arcR90.displayP(pg);
+  pg.translate(arcR90.nextXInc(),arcR90.nextYInc());
+  pg.rotate(arcR90.nextAlpha());
+  
+  arcL180.displayP(pg);
+  pg.translate(arcL180.nextXInc(),arcL180.nextYInc());
+  pg.rotate(arcL180.nextAlpha());
+  
+  arcR180.displayP(pg);
+  pg.translate(arcR180.nextXInc(),arcR180.nextYInc());
+  pg.rotate(arcR180.nextAlpha());
+  
+  ts.displayP(pg);
+  pg.translate(ts.nextXInc(),ts.nextYInc());
+  pg.rotate(ts.nextAlpha());
+  
+  arcR90.displayP(pg);
+  pg.translate(arcR90.nextXInc(),arcR90.nextYInc());
+  pg.rotate(arcR90.nextAlpha());
+
+  ts.displayP(pg);
+  pg.translate(ts.nextXInc(),ts.nextYInc());
+  pg.rotate(ts.nextAlpha());
+  
+  ts.displayP(pg);
+  pg.translate(ts.nextXInc(),ts.nextYInc());
+  pg.rotate(ts.nextAlpha());
+  
+  arcR90.displayP(pg);
+  pg.translate(arcR90.nextXInc(),arcR90.nextYInc());
+  pg.rotate(arcR90.nextAlpha());
+  
+  ts.displayP(pg);
+  pg.translate(ts.nextXInc(),ts.nextYInc());
+  pg.rotate(ts.nextAlpha());
+  
+  arcR90.displayP(pg);
+  pg.translate(arcR90.nextXInc(),arcR90.nextYInc());
+  pg.rotate(arcR90.nextAlpha());
+  
+  pg.popStyle();
+  pg.popMatrix();
+  pg.endDraw();
+}
+  
