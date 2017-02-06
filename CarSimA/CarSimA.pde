@@ -2,7 +2,7 @@
  * Autonomous Car Simulation and DEvt. platform
  */
 
-final boolean ISJS        = true;
+final boolean ISJS        = false;
 
 boolean       CURVY_TRACK = true;
 
@@ -11,9 +11,9 @@ App app;
         
 void setup(){
   size(1800,900);
-  //frameRate(15);  // nb steps per second
+  frameRate(50);  // nb steps per second
   Defaults = new defaults();
-  app = new App();
+  app = new App(null);
 }
 
 //  loop variables
@@ -23,14 +23,17 @@ void draw(){
   app.display(count++);
 }
 
+
 void mousePressed(){
+  if (mouseX<Defaults.buttonsXLimit && mouseY<Defaults.buttonsYLimit){
+    return;
+  }
   CURVY_TRACK = ! CURVY_TRACK;
   Defaults  = new defaults();
-  app = new App();
+  app = new App(app.pidDefaults);
 }
 
 //////  key controls /////////
-
 
 void keyPressed(){
   if (key == CODED){
@@ -54,7 +57,7 @@ void unCodedKey(){
       break;
     case 'd':
     case 'D':
-      app.setDefaults();
+      app.setPidDefaults();
       break;
     case 'm':
     case 'M':

@@ -1,5 +1,6 @@
 class App {
-  final float deltaT = 1.0;
+  float deltaT = 1/frameRate; //0.02;
+
   Car car;
   boolean steerAngle = false,
           manualSteering = false;
@@ -11,25 +12,24 @@ class App {
         sInc = radians(Defaults.stdSteeringSensitivity),
         saInc = radians(maxS*0.01);
  
-  final float vInc = 1;
+  final float vInc = 10;
   
   final float trackXOffsetCurvy = 100,
               trackXOffsetOval   = 160,
               trackYOffsetCurvy = 30,
               trackYOffsetOval  = 300;
-  //final float curvyMM2PX =  0.25,
-    //          MM2PX_OVAL  = 0.5;
+  
   //PGraphics g_track;
 
   PidDefaults pidDefaults;
   PID controller;
   PushButtonAdderRow pbRVec[];
   
-  App(){
+  App(PidDefaults pd){
     float xOffset,
           yOffset;
+    
     if(CURVY_TRACK){
-      //Defaults.mm2pix = curvyMM2PX;
       xOffset = trackXOffsetCurvy;
       yOffset = trackYOffsetCurvy;
     }
@@ -41,7 +41,12 @@ class App {
     x = width/2.0 + Defaults.trackStraightLength/2.0 + xOffset;
     y = height/4.0 + yOffset;
     w = Defaults.trackOuterDiameter;
-    pidDefaults = new PidDefaults();
+    if (pd == null){
+      pidDefaults = new PidDefaults();
+    }  
+    else{
+     pidDefaults = pd;
+    }
     //g_track = createGraphics(1800,900);
     //do_ImageTrack(g_track,x,y,w);
     reset();
@@ -49,12 +54,12 @@ class App {
   void display(long count){
     // first display the bg & track
     background(Defaults.grey);
-     if(CURVY_TRACK){
+    if(CURVY_TRACK){
       doCurvyTrack(x,y,w);
-     }
-     else{
+    }
+    else{
        doOvalTrack(x,y,w);
-     }  
+    }  
      // too slow in firefox!
     //image(g_track,0,0);
   
@@ -72,6 +77,8 @@ class App {
     
     // now display the animate objects
     car.display();
+    
+    updateDeltaT();
     
     // now update the animate objects
     car.update(deltaT);
@@ -91,12 +98,21 @@ class App {
     }  
   }
   
+  void updateDeltaT(){
+    deltaT = 1/frameRate; 
+  }
+  
   void reset(){
     car = new Car(x-Defaults.trackStraightLength,y-w/2.0+(Defaults.trackBlackWidth + Defaults.trackWhiteWidth)/2.0,radians(90));
     controller =  new PID(0,  // setpoint
                           pidDefaults.Kp,  //Ku*0.6,
                           pidDefaults.Ki,  //Tu/2.0,
                           pidDefaults.Kd); //Tu/8.0)
+    /*
+    println(controller.Kp.get());
+    println(controller.Ki.get());
+    println(controller.Kd.get());
+    */
 
     pbRVec = new PushButtonAdderRow[3];
     float valVec[] = {1,-1,0.1,-0.1,0.01,-0.01};
@@ -105,9 +121,9 @@ class App {
     pbRVec[2] =  new PushButtonAdderRow(100,180,controller.Kd, "Kd",valVec);
 
   }
-  void setDefaults(){
-        pidDefaults.Kp = controller.Kp.get();
-        pidDefaults.Ki = controller.Ki.get();
-        pidDefaults.Kd = controller.Kd.get();
+  void setPidDefaults(){
+    pidDefaults.Kp = pidDefaults.defaultKpFactory = controller.Kp.get();
+    pidDefaults.Ki = pidDefaults.defaultKiFactory = controller.Ki.get();
+    pidDefaults.Kd = pidDefaults.defaultKdFactory = controller.Kd.get();
   }
 }
