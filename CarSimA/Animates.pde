@@ -81,7 +81,9 @@ class Car{
 
   final color carColor = Defaults.red;
   
-  float steeringError = 0; // in pixels!
+  float steeringError = 0,   // in pixels!
+        maxSteeringError = 0,
+        minSteeringError = 0;
   
   Car(float x, float y, float theta){
     pos[0] = x;
@@ -183,38 +185,42 @@ class Car{
     line(li,-Defaults.sensorInterceptHalfLength,li,Defaults.sensorInterceptHalfLength);
     line(ri,-Defaults.sensorInterceptHalfLength,ri,Defaults.sensorInterceptHalfLength);
     popStyle();
-    steeringError=li+ri;
-  }
+    steeringError =li+ri;
+    maxSteeringError = max(maxSteeringError,(9.0*maxSteeringError+(steeringError*100.0/Defaults.trackAvailableDrivingWidth))/10.0);
+    minSteeringError = min(minSteeringError,(9.0*minSteeringError+(steeringError*100.0/Defaults.trackAvailableDrivingWidth))/10.0);
+    
+    }
   
   void displayParams(boolean steerAngle){
     int x = 10,
         nbLines = 13,
         y = height - nbLines *20,
         dy = 15;
+        
     pushMatrix();
     pushStyle();
     fill(Defaults.blue);
     translate(x,y);
-    text("FrameRate:\t" +round(frameRate),0,0);
+    text("FrameRate : \t" +round(frameRate),0,0);
     translate(0,dy);
-    text("Velocity:\t" + round(velocity),0,0);
+    text("Velocity : \t" + round(velocity),0,0);
     translate(0,dy);
-    text("Heading:\t" + round(formatHeading(degrees(heading))),0,0);
+    text("Heading : \t" + round(formatHeading(degrees(heading))),0,0);
     translate(0,dy);
-    text("Position:\t" + round(pos[0]) + ", " + round(pos[1]),0,0);
+    text("Position : \t" + round(pos[0]) + ", " + round(pos[1]),0,0);
     translate(0,dy);
-    text("Steering Angle:\t" + round(degrees(steeringAngle)%360),0,0);
+    text("Steering Angle : \t" + round(degrees(steeringAngle)%360),0,0);
     translate(0,dy);
     pushStyle();
     if (!steerAngle){
       fill(Defaults.green);
     }
-    text("Steering Angular Velocity:\t" + nf(degrees(steeringAngularVelocity),0,2),0,0);
+    text("Steering Angular Velocity : \t" + nf(degrees(steeringAngularVelocity),0,2),0,0);
     popStyle();
     translate(0,dy);
-    text("Steering power:\t" + round(degrees(app.sInc)),0,0);
+    text("Steering power : \t" + round(degrees(app.sInc)),0,0);
     translate(0,dy);
-    text("Steering error:\t" + steeringError,0,0);
+    text("Steering error Range (%) : \t" + "[" + nf(minSteeringError,1,1) + ", " + nf(maxSteeringError,1,1) + "]",0,0);
     translate(0,dy);
     text("Click the window, then use the Arrow keys and",0,0);
     translate(0,dy);

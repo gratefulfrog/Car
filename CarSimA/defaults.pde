@@ -24,6 +24,8 @@ class defaults{
         sensorHalfWidth,
         sensorInterceptHalfLength,
  
+        trackAvailableDrivingWidth,
+        
         trackStraightLengthMM,
         trackStraightLength,
         trackOuterDiameterMM,
@@ -50,6 +52,7 @@ class defaults{
     sensorInterceptHalfLength = carWidth/4.0;
 
     totalWidth = trackWhiteWidth * 2 + trackBlackWidth;
+    trackAvailableDrivingWidth = trackBlackWidth - carWidth;
 
     sensorInterceptLimit = round(sensorHalfWidth);
   
@@ -74,7 +77,7 @@ class PidDefaults{
               defaultKiFactory = 0.38, //0.01, //_Tu/2.0,
               defaultKdFactory = 2.44; //_Tu/8.0;
   */      
-  float defaultKpFactory = 38, //0.72,// _Ku*0.6,
+  float defaultKpFactory = 36, //0.72,// _Ku*0.6,
         defaultKiFactory = 0.38, //0.01, //_Tu/2.0,
         defaultKdFactory = 2.44; //_Tu/8.0;
 
