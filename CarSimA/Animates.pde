@@ -186,8 +186,10 @@ class Car{
     line(ri,-Defaults.sensorInterceptHalfLength,ri,Defaults.sensorInterceptHalfLength);
     popStyle();
     steeringError =li+ri;
-    maxSteeringError = max(maxSteeringError,(9.0*maxSteeringError+(steeringError*100.0/Defaults.trackAvailableDrivingWidth))/10.0);
-    minSteeringError = min(minSteeringError,(9.0*minSteeringError+(steeringError*100.0/Defaults.trackAvailableDrivingWidth))/10.0);
+    //maxSteeringError = max(maxSteeringError,(9.0*maxSteeringError+(steeringError*100.0/Defaults.trackAvailableDrivingWidth))/10.0);
+    //minSteeringError = min(minSteeringError,(9.0*minSteeringError+(steeringError*100.0/Defaults.trackAvailableDrivingWidth))/10.0);
+    maxSteeringError = max(maxSteeringError,steeringError*100.0/Defaults.trackAvailableDrivingWidth);
+    minSteeringError = min(minSteeringError,steeringError*100.0/Defaults.trackAvailableDrivingWidth);
     
     }
   

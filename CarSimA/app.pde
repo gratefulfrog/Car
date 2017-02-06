@@ -48,13 +48,15 @@ class App {
      pidDefaults = pd;
     }
     //g_track = createGraphics(1800,900);
-    //do_ImageTrack(g_track,x,y,w);
+    //doImageCurvyTrack(g_track,x,y,w);
+    doCurvyTrack(x,y,w);
     reset();
   }
   void display(long count){
     // first display the bg & track
     background(Defaults.grey);
     if(CURVY_TRACK){
+      //doImageCurvyTrack(g_track,x,y,w);
       doCurvyTrack(x,y,w);
     }
     else{
