@@ -182,6 +182,8 @@ void doCurvyTrack(float x, float y, float w){
   TrackSection arcL45 = new CurvedSection(-HALF_PI,-HALF_PI/2.0,false);
   TrackSection arcL90 = new CurvedSection(-HALF_PI,0,false);
   
+  final float epsilon = 0.5;
+  
   pushMatrix();
   pushStyle();
   noStroke();
@@ -208,15 +210,15 @@ void doCurvyTrack(float x, float y, float w){
   rotate(ts.nextAlpha());
   
   arcR90.display();
-  translate(arcR90.nextXInc(),arcR90.nextYInc());
+  translate(arcR90.nextXInc(),arcR90.nextYInc()-epsilon);
   rotate(arcR90.nextAlpha());
 
   ts.display();
-  translate(ts.nextXInc(),ts.nextYInc());
+  translate(ts.nextXInc()-epsilon,ts.nextYInc());
   rotate(ts.nextAlpha());
   
   ts.display();
-  translate(ts.nextXInc(),ts.nextYInc());
+  translate(ts.nextXInc()-epsilon,ts.nextYInc());
   rotate(ts.nextAlpha());
   
   arcR90.display();
@@ -247,12 +249,15 @@ void  doImageCurvyTrack(PGraphics pg,float x, float y, float w){
   TrackSection arcL45 = new CurvedSection(-HALF_PI,-HALF_PI/2.0,false);
   TrackSection arcL90 = new CurvedSection(-HALF_PI,0,false);
   
+  final float epsilon = 0.5;
+  
   pg.pushMatrix();
   pg.pushStyle();
   pg.noStroke();
   
   // move to starting point!
-  pg.translate(x,y);
+  pg.translate(x-Defaults.trackStraightLength,
+            y-w/2.0); 
   
   arcR90.displayP(pg);
   pg.translate(arcR90.nextXInc(),arcR90.nextYInc());
@@ -271,15 +276,15 @@ void  doImageCurvyTrack(PGraphics pg,float x, float y, float w){
   pg.rotate(ts.nextAlpha());
   
   arcR90.displayP(pg);
-  pg.translate(arcR90.nextXInc(),arcR90.nextYInc());
+  pg.translate(arcR90.nextXInc(),arcR90.nextYInc()-epsilon);
   pg.rotate(arcR90.nextAlpha());
 
   ts.displayP(pg);
-  pg.translate(ts.nextXInc(),ts.nextYInc());
+  pg.translate(ts.nextXInc()-epsilon,ts.nextYInc());
   pg.rotate(ts.nextAlpha());
   
   ts.displayP(pg);
-  pg.translate(ts.nextXInc(),ts.nextYInc());
+  pg.translate(ts.nextXInc()-epsilon,ts.nextYInc());
   pg.rotate(ts.nextAlpha());
   
   arcR90.displayP(pg);
