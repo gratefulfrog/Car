@@ -28,7 +28,10 @@ class defaults{
         trackStraightLength,
         trackOuterDiameterMM,
         trackOuterDiameter,
-        totalWidth;
+        totalWidth,
+        
+        buttonsXLimit,
+        buttonsYLimit;
                       
   int sensorInterceptLimit;
                        
@@ -54,6 +57,9 @@ class defaults{
     trackStraightLength   = trackStraightLengthMM * mm2pix;
     trackOuterDiameterMM  = 1400;
     trackOuterDiameter    = trackOuterDiameterMM * mm2pix;
+    
+    buttonsXLimit = 430;
+    buttonsYLimit = 210;
   }         
     
 }
@@ -63,14 +69,18 @@ class PidDefaults{
   // it is hard to do better!
   //final float _Ku = 2.01, // empirically determined following the Ziegler-Nichols method to find the value for oscillation
   //            _Tu = 1.1,  // oscillation dt
-               
-  final float defaultKpFactory = 0.72,// _Ku*0.6,
-              defaultKiFactory = 0.01, //_Tu/2.0,
-              defaultKdFactory = 2.3; //_Tu/8.0;
-        
- float Kp = defaultKpFactory,
-       Ki = defaultKiFactory,
-       Kd = defaultKdFactory;
+  /*             
+  final float defaultKpFactory = 35, //0.72,// _Ku*0.6,
+              defaultKiFactory = 0.38, //0.01, //_Tu/2.0,
+              defaultKdFactory = 2.44; //_Tu/8.0;
+  */      
+  float defaultKpFactory = 38, //0.72,// _Ku*0.6,
+        defaultKiFactory = 0.38, //0.01, //_Tu/2.0,
+        defaultKdFactory = 2.44; //_Tu/8.0;
+
+  float Kp = defaultKpFactory,
+        Ki = defaultKiFactory,
+        Kd = defaultKdFactory;
             
   PidDefaults(){};
   

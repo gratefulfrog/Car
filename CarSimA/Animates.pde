@@ -68,10 +68,11 @@ class Car{
               dyRearAxel = (13.25/15.0)* len + dyFrontAxel,
               dxCenterLine = -0.5 * wid,
               B = dyRearAxel,
-              maxSteeringAngle = radians(25),
-              maxSteeringAngularVelocity = radians(10),  // radians par dt
-              maxVelocity =  100;  //cm par second
+              maxSteeringAngle = radians(25),  
+              maxVelocity =  1000;  //mm par second
               
+  float     maxSteeringAngularVelocity = radians(0.01);  // radians par dt
+  
   float heading = 0,
         velocity = 0,
         pos[] = {0,0},
@@ -109,7 +110,7 @@ class Car{
     steeringAngularVelocitySet(inc+steeringAngularVelocity);
   }
   void velocitySet(float a){
-    velocity = max(-maxVelocity,min(a,maxVelocity));
+    velocity = a; //max(-maxVelocity,min(a,maxVelocity));
   }
   void velocityInc(float inc){
     velocitySet(inc+velocity);
@@ -187,12 +188,15 @@ class Car{
   
   void displayParams(boolean steerAngle){
     int x = 10,
-        y = height - 12 *20,
+        nbLines = 13,
+        y = height - nbLines *20,
         dy = 15;
     pushMatrix();
     pushStyle();
     fill(Defaults.blue);
     translate(x,y);
+    text("FrameRate:\t" +round(frameRate),0,0);
+    translate(0,dy);
     text("Velocity:\t" + round(velocity),0,0);
     translate(0,dy);
     text("Heading:\t" + round(formatHeading(degrees(heading))),0,0);
