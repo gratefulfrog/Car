@@ -53,7 +53,7 @@ class StraightSection extends TrackSection{
 
 class CurvedSection extends TrackSection {
   final float  dia = Defaults.trackOuterDiameter,
-               rad = dia/2;
+               rad = dia/2.0;
   float start,
         stop;
   boolean right;
@@ -70,6 +70,7 @@ class CurvedSection extends TrackSection {
   void display(){
     pushMatrix();
     pushStyle();
+    noStroke();
     translate(0,rad);
     float d = dia;
     fill(Defaults.white);
@@ -79,13 +80,13 @@ class CurvedSection extends TrackSection {
     }
     arc(0,0,d,d,start,stop);
     fill(Defaults.black);
-    d -= 2*Defaults.trackWhiteWidth;
+    d -= 2.0*Defaults.trackWhiteWidth;
     arc(0,0,d,d,start,stop);
     fill(Defaults.white);
-    d -= 2*Defaults.trackBlackWidth;
+    d -= 2.0*Defaults.trackBlackWidth;
     arc(0,0,d,d,start,stop);
     fill(Defaults.grey);
-    d -= 2*Defaults.trackWhiteWidth;
+    d -= 2.0*Defaults.trackWhiteWidth;
     arc(0,0,d,d,start,stop);
     popStyle();
     popMatrix();
