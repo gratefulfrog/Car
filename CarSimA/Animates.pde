@@ -71,7 +71,7 @@ class Car{
               maxSteeringAngle = radians(25),  
               maxVelocity =  1000;  //mm par second
               
-  float     maxSteeringAngularVelocity = radians(0.01);  // radians par dt
+  float     maxSteeringAngularVelocity = radians(150);  // radians par dt
   
   float heading = 0,
         velocity = 0,
@@ -84,6 +84,12 @@ class Car{
   float steeringError = 0,   // in pixels!
         maxSteeringError = 0,
         minSteeringError = 0;
+  float maxSetSteeringAngularVelocity = 0,  // in percent of max per app.DeltaT
+        minSetSteeringAngularVelocity = 0;
+  
+  float maxSetSteeringAngle = 0,  // in  percent of max per app.DeltaT
+        minSetSteeringAngle = 0;
+  
   
   Car(float x, float y, float theta){
     pos[0] = x;
@@ -92,7 +98,7 @@ class Car{
     fa = new DriveAxel(0,0);
     ra = new DriveAxel(0,B);
     if (ISJS){
-      s = loadShape("CarSim/data/CarBodyLongerFilled.svg");
+      s = loadShape("CarSimA/data/CarBodyLongerFilled.svg");
     }
     else{
       s = loadShape("CarBodyLongerFilled.svg");
@@ -101,12 +107,18 @@ class Car{
   
   void steeringAngleSet(float a){
     steeringAngle = max(-maxSteeringAngle,min(a,maxSteeringAngle));
+    float pct = 100.0*(steeringAngle/maxSteeringAngle);
+    minSetSteeringAngle = min(minSetSteeringAngle,pct);
+    maxSetSteeringAngle = max(maxSetSteeringAngle,pct);
   }
   void steeringAngleInc(float inc){
     steeringAngleSet(inc+steeringAngle);
   }
   void steeringAngularVelocitySet(float a){
     steeringAngularVelocity = max(-maxSteeringAngularVelocity,min(a,maxSteeringAngularVelocity));
+    float pct = 100.0*(steeringAngularVelocity/maxSteeringAngularVelocity);
+    minSetSteeringAngularVelocity = min(minSetSteeringAngularVelocity,pct);
+    maxSetSteeringAngularVelocity = max(maxSetSteeringAngularVelocity,pct);
   }
   void steeringAngularVelocityInc(float inc){
     steeringAngularVelocitySet(inc+steeringAngularVelocity);
@@ -211,13 +223,13 @@ class Car{
     translate(0,dy);
     text("Position : \t" + round(pos[0]) + ", " + round(pos[1]),0,0);
     translate(0,dy);
-    text("Steering Angle : \t" + round(degrees(steeringAngle)%360),0,0);
+    text("Steering Angle Range : \t" +  "[" +  nf(minSetSteeringAngle,1,1) + "," + nf(maxSetSteeringAngle,1,1) + "]" ,0,0);
     translate(0,dy);
     pushStyle();
     if (!steerAngle){
       fill(Defaults.green);
     }
-    text("Steering Angular Velocity : \t" + nf(degrees(steeringAngularVelocity),0,2),0,0);
+    text("Steering Angular Velocity range (%) : \t" + "[" +  nf(minSetSteeringAngularVelocity,1,1) + "," + nf(maxSetSteeringAngularVelocity,1,1) + "]" ,0,0);
     popStyle();
     translate(0,dy);
     text("Steering power : \t" + round(degrees(app.sInc)),0,0);
