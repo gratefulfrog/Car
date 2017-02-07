@@ -92,7 +92,7 @@ class App {
     }
     // only executed in automatic steering mode!
     // note that the delta needs to be recomputed before calling the PID!
-    if (steerAngle){
+    if (!steerAngle){
       car.steeringAngularVelocitySet(controller.update(-car.steeringError,deltaT));
     }
     else{
@@ -110,12 +110,7 @@ class App {
                           pidDefaults.Kp,  //Ku*0.6,
                           pidDefaults.Ki,  //Tu/2.0,
                           pidDefaults.Kd); //Tu/8.0)
-    /*
-    println(controller.Kp.get());
-    println(controller.Ki.get());
-    println(controller.Kd.get());
-    */
-
+    
     pbRVec = new PushButtonAdderRow[3];
     float valVec[] = {1,-1,0.1,-0.1,0.01,-0.01};
     pbRVec[0] =  new PushButtonAdderRow(100,60,controller.Kp, "Kp",valVec);

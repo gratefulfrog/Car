@@ -77,9 +77,9 @@ class PidDefaults{
               defaultKiFactory = 0.38, //0.01, //_Tu/2.0,
               defaultKdFactory = 2.44; //_Tu/8.0;
   */      
-  float defaultKpFactory = 36, //0.72,// _Ku*0.6,
-        defaultKiFactory = 0.38, //0.01, //_Tu/2.0,
-        defaultKdFactory = 2.44; //_Tu/8.0;
+  float defaultKpFactory = 2.04, //4.97, //1.0, //36, //0.72,// _Ku*0.6,
+        defaultKiFactory = 0.71, //0.76, //0.97, //0.38, //0.01, //_Tu/2.0,
+        defaultKdFactory = 2.54; //2.46; //1.39; //2.44; //_Tu/8.0;
 
   float Kp = defaultKpFactory,
         Ki = defaultKiFactory,
