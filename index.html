@@ -5,23 +5,30 @@
     <script type="text/javascript"  src="processing.min.js"></script>
 
  <style>
-      p {width: 1800px}
+      p {width: 800px}
 
 </style>
   </head>
   <body>
-    <h1 align="center">Autonomous Car Simulator</h1>
-    <p align="center"> <a href="https://github.com/gratefulfrog/Car">Repo</a></p>
-    <canvas id="mySketch"
-	    data-processing-sources="CarSimA/CarSimA.pde
-				     CarSimA/Animates.pde
-				     CarSimA/track.pde
-				     CarSimA/defaults.pde
-				     CarSimA/pid.pde
-				     CarSimA/app.pde
-				     CarSimA/buttons.pde
-				     CarSimA/indirection.pde">
-    </canvas>
+    <h1 align="center">Autonomous Car Simulators</h1>
+    <p>There are two versions:</p>
+    
+    <h2> <a href="simple.html">Simple control</a></h2>
+    <p> A single PID manages all phases of driving. In this mode, the car has a tendancy to oscillate on straight track,  but it can attain huge speeds.
+      The cause of the oscillation would seem to be the overly simplied measured variable which is simply the difference between the distances to the two white lines.</p>
+
+    
+    <h2> <a href="modal.html">Modal control</a></h2>
+    <p> Pid parameters are tuned to specific drivng modes. In this version, a second sensor provides
+      information about the car's heading as well as its position on the track. There are two modes:
+      <ul>
+	<li><i>Mode 0:</i> seeks to place the car on the center-line of the track</li>
+	<li><i>Mode 1:</i>  seeks to align the car's heading with that of the track.</li>
+      </ul>
+    <p>In this so called modal steering, the car oscillates less, but it loses control earlier than in the simple driving mode
+      model. I'm not sure if better PID tuning would help or not. The PID parameters can still be edited with the buttons on the upper left.</p>
+    <p> In both cases, the frame-rate is critical and should be as close to 50 as possbile. If your browser cannot achieve 50 fps, then you should
+      download the native processing version and try it out!</p>
   </body>
 </html>
 
