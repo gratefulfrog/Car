@@ -27,6 +27,10 @@ class App {
                   currentMode;
   int currentModeID = 0;
   
+  float lastKp[], 
+        lastKi[], 
+        lastKd[]; 
+  
   PushButtonAdderRow pbRVec[];
   
   App(PidDefaults pd){
@@ -87,14 +91,26 @@ class App {
   
   void updateSteeringMode(){
    if (car.inMiddle) {
-      currentMode.controller.Kp.set(pidDefaults.Kp[1]); 
-      currentMode.controller.Ki.set(pidDefaults.Ki[1]); 
-      currentMode.controller.Kd.set(pidDefaults.Kd[1]);
+     if (currentMode.modeID != 1){
+       lastKp[0] = currentMode.controller.Kp.get();
+       lastKi[0] = currentMode.controller.Ki.get();
+       lastKd[0] = currentMode.controller.Kd.get();
+       currentMode.controller.Kp.set(lastKp[1]); 
+       currentMode.controller.Ki.set(lastKi[1]); 
+       currentMode.controller.Kd.set(lastKd[1]);  
+       currentMode.modeID = 1;
+     }
    }
    else{
-      currentMode.controller.Kp.set(pidDefaults.Kp[0]); 
-      currentMode.controller.Ki.set(pidDefaults.Ki[0]); 
-      currentMode.controller.Kd.set(pidDefaults.Kd[0]);
+     if (currentMode.modeID != 0){
+       lastKp[1] = currentMode.controller.Kp.get();
+       lastKi[1] = currentMode.controller.Ki.get();
+       lastKd[1] = currentMode.controller.Kd.get();
+       currentMode.controller.Kp.set(lastKp[0]); 
+       currentMode.controller.Ki.set(lastKi[0]); 
+       currentMode.controller.Kd.set(lastKd[0]);
+       currentMode.modeID = 0;
+     }
    }
   }
   
@@ -102,7 +118,8 @@ class App {
     return new PidSteeringMode(0,  // setpoint
                                pidDefaults.Kp[i],
                                pidDefaults.Ki[i],  
-                               pidDefaults.Kd[i]); 
+                               pidDefaults.Kd[i],
+                               i); 
   }
     
   
@@ -122,7 +139,7 @@ class App {
     pushStyle();
     currentMode.controller.display();
     
-    text("PID Control",230,15);
+    text("PID Control: \t" + currentMode.modeID,210,15);
     for(int i=0;i< pbRVec.length;i++){ 
       pbRVec[i].display();
     }
@@ -135,17 +152,20 @@ class App {
   
   void reset(){
     car = new Car(x-Defaults.trackStraightLength,y-w/2.0+(Defaults.trackBlackWidth + Defaults.trackWhiteWidth)/2.0,radians(90));
-    /*
-    controller =  new PID(0,  // setpoint
-                          pidDefaults.Kp,  //Ku*0.6,
-                          pidDefaults.Ki,  //Tu/2.0,
-                          pidDefaults.Kd); //Tu/8.0)
-    */
+    
+    lastKp = new float[PidDefaults.nbPIDs];
+    lastKi = new float[PidDefaults.nbPIDs];
+    lastKd = new float[PidDefaults.nbPIDs];
+    
     for (int i=0;i<PidDefaults.nbPIDs;i++){
       mode[i] = new PidSteeringMode(0,  // setpoint
                                pidDefaults.Kp[i],
                                pidDefaults.Ki[i],  
-                               pidDefaults.Kd[i]); 
+                               pidDefaults.Kd[i],
+                               i);
+      lastKp[i] = pidDefaults.Kp[i];
+      lastKi[i] = pidDefaults.Ki[i];
+      lastKd[i] = pidDefaults.Kd[i];
     }
     currentModeID=0;
     currentMode = mode[currentModeID];
