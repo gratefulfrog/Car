@@ -62,6 +62,8 @@ class Car{
   DriveAxel fa, ra;
   PShape s;
   
+  boolean inMiddle = false;
+  
   final float len = Defaults.carHieght,
               wid = Defaults.carWidth,
               dyFrontAxel = -0.255 * len,
@@ -89,7 +91,10 @@ class Car{
   
   float maxSetSteeringAngle = 0,  // in  percent of max per app.DeltaT
         minSetSteeringAngle = 0;
-  
+        
+  final int nbSensors = 2;
+  int li[] = new int[nbSensors],
+      ri[] = new int[nbSensors];
   
   Car(float x, float y, float theta){
     pos[0] = x;
@@ -148,7 +153,8 @@ class Car{
     translate(pos[0],pos[1]);
     rotate(heading);
     shapeMode(CENTER);
-    displaySensor();
+    displaySensor(0);
+    displaySensor(1);
     shape(s, 0,-dyFrontAxel,wid,len);
     pushMatrix();
     rotate(steeringAngle);
@@ -158,56 +164,62 @@ class Car{
     popMatrix();
   }
   
-  void displaySensor(){
+  void displaySensor(int  id){
+    float y = id *B;
     pushStyle();
     strokeWeight(2);
     stroke(Defaults.targetColor);
-    
-    displaySensorIntercepts();
-    line(-Defaults.sensorHalfWidth,0,Defaults.sensorHalfWidth,0);
+    displaySensorIntercepts(id);
+    line(-Defaults.sensorHalfWidth,y,Defaults.sensorHalfWidth,y);
     popStyle();
   }
   
-  void displaySensorIntercepts(){
+  void displaySensorIntercepts(int id){
     float ang = heading-HALF_PI;
-    int li = -Defaults.sensorInterceptLimit,
-        ri =  Defaults.sensorInterceptLimit;
+    float yOffset = id * B;
+    float pX = pos[0] - yOffset*cos(ang),
+          pY = pos[1] - yOffset*sin(ang);
+    li[id] = -Defaults.sensorInterceptLimit;
+    ri[id] = Defaults.sensorInterceptLimit;
+    
     for (int i = 0;i<Defaults.sensorInterceptLimit; i++){
-      int x = round(pos[0] - i*sin(ang)),
-          y = round(pos[1] + i*cos(ang));
+      int x = round(pX - i*sin(ang)),
+          y = round(pY + i*cos(ang));
       color c = get(x,y);      
       if(c != color(0)){
-        ri = i;
+        ri[id] = i;
         break;
       }
     }
     for (int i = 0;i>-Defaults.sensorInterceptLimit; i--){
-      
-      int x = round(pos[0] - i*sin(ang)),
-          y = round(pos[1] + i*cos(ang));
+      int x = round(pX - i*sin(ang)),
+          y = round(pY + i*cos(ang));
       color c = get(x,y);      
       if(c != color(0)){
-        li = i;
+        li[id] = i;
         break;
       } 
     }
     pushStyle();
     stroke(Defaults.green);
     strokeWeight(4);
-    line(li,-Defaults.sensorInterceptHalfLength,li,Defaults.sensorInterceptHalfLength);
-    line(ri,-Defaults.sensorInterceptHalfLength,ri,Defaults.sensorInterceptHalfLength);
+    line(li[id],yOffset-Defaults.sensorInterceptHalfLength,li[id],yOffset+Defaults.sensorInterceptHalfLength);
+    line(ri[id],yOffset-Defaults.sensorInterceptHalfLength,ri[id],yOffset+Defaults.sensorInterceptHalfLength);
     popStyle();
-    steeringError =li+ri;
-    //maxSteeringError = max(maxSteeringError,(9.0*maxSteeringError+(steeringError*100.0/Defaults.trackAvailableDrivingWidth))/10.0);
-    //minSteeringError = min(minSteeringError,(9.0*minSteeringError+(steeringError*100.0/Defaults.trackAvailableDrivingWidth))/10.0);
-    maxSteeringError = max(maxSteeringError,steeringError*100.0/Defaults.trackAvailableDrivingWidth);
-    minSteeringError = min(minSteeringError,steeringError*100.0/Defaults.trackAvailableDrivingWidth);
-    
+    if (id ==0){
+      steeringError = li[id]+ri[id];
+      inMiddle = abs(steeringError) <= Defaults.trackerMiddleEpsilon;
+      maxSteeringError = max(maxSteeringError,steeringError*100.0/Defaults.trackAvailableDrivingWidth);
+      minSteeringError = min(minSteeringError,steeringError*100.0/Defaults.trackAvailableDrivingWidth);
     }
+    else if (id==1){ // second sensor
+      steeringError = inMiddle ? atan2(B,ri[1]-ri[0]) : steeringError;
+    }
+  }
   
   void displayParams(boolean steerAngle){
     int x = 10,
-        nbLines = 13,
+        nbLines = 14,
         y = height - nbLines *20,
         dy = 15;
         
@@ -216,8 +228,8 @@ class Car{
     fill(Defaults.blue);
     translate(x,y);
     text("FrameRate : \t" +round(frameRate),0,0);
-    //translate(0,dy);
-    //text("Pid Integral : \t" + app.controller.integral,0,0);
+    translate(0,dy);
+    text("In Middle : \t" + inMiddle,0,0);
     translate(0,dy);
     text("Velocity : \t" + round(velocity),0,0);
     translate(0,dy);

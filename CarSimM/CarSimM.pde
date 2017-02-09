@@ -1,8 +1,9 @@
   /* CarSim
  * Autonomous Car Simulation and DEvt. platform
+ * this verison implements various experiments in modal control, most not great...
  */
 
-final boolean ISJS        = true;
+final boolean ISJS        = false;
 
 boolean       CURVY_TRACK = true;
 
@@ -16,11 +17,8 @@ void setup(){
   app = new App(null);
 }
 
-//  loop variables
-long count = 0;
-
 void draw(){
-  app.display(count++);
+  app.display();
 }
 
 
