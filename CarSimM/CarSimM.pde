@@ -1,9 +1,9 @@
-  /* CarSim
+  /* CarSimM
  * Autonomous Car Simulation and DEvt. platform
- * this verison implements various experiments in modal control, most not great...
+ * this verison implements various experiments in modal control, doesn't really work yet 2017 02 09...
  */
 
-final boolean ISJS        = false;
+final boolean ISJS        = true;
 
 boolean       CURVY_TRACK = true;
 

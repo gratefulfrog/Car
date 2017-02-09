@@ -1,4 +1,5 @@
 abstract class SteeringMode{
+  int modeID;
   
   SteeringController controller;
   abstract float update(float mv, float dt);
@@ -8,8 +9,9 @@ abstract class SteeringMode{
 class PidSteeringMode extends SteeringMode{
   PID controller;
   
-  PidSteeringMode(float setPoint,float KP,float KI,float KD){
+  PidSteeringMode(float setPoint,float KP,float KI,float KD,int id){
     controller = new PID(setPoint, KP, KI, KD);
+    modeID=id;
   }
   float getError(Car car){
     return -car.steeringError;
