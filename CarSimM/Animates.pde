@@ -369,7 +369,7 @@ class Car{
     color c = get(round(pos[0]),round(pos[1]));
     switch(jumpStatus){
       case -1:
-        if (c== Defaults.green){
+        if (green(c) !=0){ //== Defaults.green){
           jumpStatus++;
           jumpInitX = pos[0];
           jumpInitY = pos[1];
