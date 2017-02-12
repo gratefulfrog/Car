@@ -275,11 +275,14 @@ void doCurvyTrack(float x, float y, float w){
   rotate(arcR90.nextAlpha());
 
   ts.display();
-  jm.display();
   translate(ts.nextXInc()-epsilon,ts.nextYInc());
   rotate(ts.nextAlpha());
   
   ts.display();
+  pushMatrix();
+  translate(-ts.nextXInc()/2.0,0);
+  jm.display();
+  popMatrix();
   translate(ts.nextXInc()-epsilon,ts.nextYInc());
   rotate(ts.nextAlpha());
   
