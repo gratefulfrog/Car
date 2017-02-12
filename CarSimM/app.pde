@@ -22,15 +22,6 @@ class App {
   //PGraphics g_track;
 
   PidDefaults pidDefaults;
-  //PID controller;
-  PidSteeringMode mode[] = new PidSteeringMode[2], 
-                  currentMode;
-  int currentModeID = 0;
-  
-  float lastKp[], 
-        lastKi[], 
-        lastKd[]; 
-  
   PushButtonAdderRow pbRVec[];
   
   App(PidDefaults pd){
@@ -77,52 +68,10 @@ class App {
     if (manualSteering || (car.velocity == 0)){
       return;
     }
-    updateSteeringMode();
-    float error = currentMode.getError(car);
-    // only executed in automatic steering mode!
-    // note that the delta needs to be recomputed before calling the PID!
-    if (!steerAngle){
-      car.steeringAngularVelocitySet(currentMode.controller.update(error,deltaT));
-    }
-    else{
-      car.steeringAngleSet(currentMode.controller.update(error,deltaT));
-    }  
+    car.updateSteeringMode(deltaT);
   }
   
-  void updateSteeringMode(){
-   if (car.inMiddle) {
-     if (currentMode.modeID != 1){
-       lastKp[0] = currentMode.controller.Kp.get();
-       lastKi[0] = currentMode.controller.Ki.get();
-       lastKd[0] = currentMode.controller.Kd.get();
-       currentMode.controller.Kp.set(lastKp[1]); 
-       currentMode.controller.Ki.set(lastKi[1]); 
-       currentMode.controller.Kd.set(lastKd[1]);  
-       currentMode.modeID = 1;
-     }
-   }
-   else{
-     if (currentMode.modeID != 0){
-       lastKp[1] = currentMode.controller.Kp.get();
-       lastKi[1] = currentMode.controller.Ki.get();
-       lastKd[1] = currentMode.controller.Kd.get();
-       currentMode.controller.Kp.set(lastKp[0]); 
-       currentMode.controller.Ki.set(lastKi[0]); 
-       currentMode.controller.Kd.set(lastKd[0]);
-       currentMode.modeID = 0;
-     }
-   }
-  }
-  
-  PidSteeringMode newMode(int i){
-    return new PidSteeringMode(0,  // setpoint
-                               pidDefaults.Kp[i],
-                               pidDefaults.Ki[i],  
-                               pidDefaults.Kd[i],
-                               i); 
-  }
-    
-  
+
   void displayTrack(){
     if(CURVY_TRACK){
       //doImageCurvyTrack(g_track,x,y,w);
@@ -137,9 +86,9 @@ class App {
   void displayControler(){
     // then display the values and buttons & parameters
     pushStyle();
-    currentMode.controller.display();
+    car.currentMode.controller.display();
     
-    text("PID Control: \t" + currentMode.modeID,210,15);
+    text("PID Control: \t" + car.currentMode.modeID,210,15);
     for(int i=0;i< pbRVec.length;i++){ 
       pbRVec[i].display();
     }
@@ -151,35 +100,18 @@ class App {
   }
   
   void reset(){
-    car = new Car(x-Defaults.trackStraightLength,y-w/2.0+(Defaults.trackBlackWidth + Defaults.trackWhiteWidth)/2.0,radians(90));
-    
-    lastKp = new float[PidDefaults.nbPIDs];
-    lastKi = new float[PidDefaults.nbPIDs];
-    lastKd = new float[PidDefaults.nbPIDs];
-    
-    for (int i=0;i<PidDefaults.nbPIDs;i++){
-      mode[i] = new PidSteeringMode(0,  // setpoint
-                               pidDefaults.Kp[i],
-                               pidDefaults.Ki[i],  
-                               pidDefaults.Kd[i],
-                               i);
-      lastKp[i] = pidDefaults.Kp[i];
-      lastKi[i] = pidDefaults.Ki[i];
-      lastKd[i] = pidDefaults.Kd[i];
-    }
-    currentModeID=0;
-    currentMode = mode[currentModeID];
+    car = new Car(x-Defaults.trackStraightLength,y-w/2.0+(Defaults.trackBlackWidth + Defaults.trackWhiteWidth)/2.0,radians(90),pidDefaults);
                           
     pbRVec = new PushButtonAdderRow[3];
     float valVec[] = {1,-1,0.1,-0.1,0.01,-0.01};
-    pbRVec[0] =  new PushButtonAdderRow(100,60,currentMode.controller.Kp, "Kp",valVec);
-    pbRVec[1] =  new PushButtonAdderRow(100,120,currentMode.controller.Ki, "Ki",valVec);
-    pbRVec[2] =  new PushButtonAdderRow(100,180,currentMode.controller.Kd, "Kd",valVec);
+    pbRVec[0] =  new PushButtonAdderRow(100,60,car.currentMode.controller.Kp, "Kp",valVec);
+    pbRVec[1] =  new PushButtonAdderRow(100,120,car.currentMode.controller.Ki, "Ki",valVec);
+    pbRVec[2] =  new PushButtonAdderRow(100,180,car.currentMode.controller.Kd, "Kd",valVec);
 
   }
   void setPidDefaults(){
-    pidDefaults.Kp[currentModeID] = pidDefaults.defaultKpFactory[currentModeID] = currentMode.controller.Kp.get();
-    pidDefaults.Ki[currentModeID] = pidDefaults.defaultKiFactory[currentModeID] = currentMode.controller.Ki.get();
-    pidDefaults.Kd[currentModeID] = pidDefaults.defaultKdFactory[currentModeID] = currentMode.controller.Kd.get();
+    pidDefaults.Kp[car.currentModeID] = pidDefaults.defaultKpFactory[car.currentModeID] = car.currentMode.controller.Kp.get();
+    pidDefaults.Ki[car.currentModeID] = pidDefaults.defaultKiFactory[car.currentModeID] = car.currentMode.controller.Ki.get();
+    pidDefaults.Kd[car.currentModeID] = pidDefaults.defaultKdFactory[car.currentModeID] = car.currentMode.controller.Kd.get();
   }
 }
