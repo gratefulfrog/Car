@@ -5,7 +5,8 @@
     <script type="text/javascript"  src="processing.min.js"></script>
 
  <style>
-      p {width: 800px}
+   p {width: 800px}
+   li {width: 800px}
 
 </style>
   </head>
@@ -14,20 +15,23 @@
     <p>There are two versions:</p>
     
     <h2> <a href="simple.html">Simple control</a></h2>
-    <p> A single PID manages all phases of driving. In this mode, the car has a tendancy to oscillate on straight track,  but it can attain huge speeds.
-      The cause of the oscillation would seem to be the overly simplied measured variable which is simply the difference between the distances to the two white lines.</p>
+    <p> A single PID manages all phases of driving. In this mode, the car has a tendency to oscillate on straight track,  but it can attain huge speeds.
+      The cause of the oscillation would seem to be the overly simplified measured variable which is simply the difference between the distances to the two white lines.</p>
 
     
     <h2> <a href="modal.html">Modal control</a></h2>
-    <p> Pid parameters are tuned to specific drivng modes. In this version, a second sensor provides
-      information about the car's heading as well as its position on the track. There are two modes:
+    <p> PID parameters are tuned to specific driving modes. In this version, a second sensor provides
+      information about the car's heading as well as its position on the track. </p>
+    <p> The following modes are implemented:
       <ul>
 	<li><i>Mode 0:</i> seeks to place the car on the center-line of the track</li>
 	<li><i>Mode 1:</i>  seeks to align the car's heading with that of the track.</li>
+	<li><i>Mode Jump:</i> when the green jump ramp maker is detected, the car begins accelerating and when it hits the blue jump lip marker, it
+	  flies across the gap, returning to its previous speed while in the air and landing like Dirty Harry driving through San Francisco.</li> 
       </ul>
     <p>In this so called modal steering, the car oscillates less, but it loses control earlier than in the simple driving mode
       model. I'm not sure if better PID tuning would help or not. The PID parameters can still be edited with the buttons on the upper left.</p>
-    <p> In both cases, the frame-rate is critical and should be as close to 50 as possbile. If your browser cannot achieve 50 fps, then you should
+    <p> In both cases, the frame-rate is critical and should be as close to 50 as possible. If your browser cannot achieve 50 fps, then you should
       download the native processing version and try it out!</p>
   </body>
 </html>
