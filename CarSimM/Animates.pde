@@ -235,8 +235,10 @@ class Car{
     translate(pos[0],pos[1]);
     rotate(heading);
     shapeMode(CENTER);
-    displaySensor(0);
-    displaySensor(1);
+    if (jumpStatus != 1){
+      displaySensor(0);
+      displaySensor(1);
+    }
     shape(s, 0,-dyFrontAxel,wid,len);
     pushMatrix();
     rotate(steeringAngle);
