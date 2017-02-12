@@ -2,6 +2,52 @@
 // these need to be outside all classes for some incomprehensible javascript reason!
 // pixel dimnsions
 
+class JumpMarker{
+  final color startPopEnd[] = {#00FF00,
+                               #0000FF,
+                               #FF0000};
+  
+  void displayMark(int id){
+    pushMatrix();
+    pushStyle();
+    fill (startPopEnd[id]);
+    translate(-2*Defaults.trackWhiteWidth,Defaults.trackWhiteWidth);
+    rect(0,0,2*Defaults.trackWhiteWidth,Defaults.trackBlackWidth);
+    popStyle();
+    popMatrix();
+  }
+  void displayMarkP(PGraphics pg,int id){
+    pg.pushMatrix();
+    pg.pushStyle();
+    pg.fill (startPopEnd[id]);
+    pg.translate(-2*Defaults.trackWhiteWidth,Defaults.trackWhiteWidth);
+    pg.rect(0,0,2*Defaults.trackWhiteWidth,Defaults.trackBlackWidth);
+    pg.popStyle();
+    pg.popMatrix();
+  }
+  
+  void display(){
+    pushMatrix();
+    translate(Defaults.Jumplength*0.45,0);
+    for (int i=0;i<3;i++){
+      displayMark(i);
+      translate(Defaults.Jumplength,0);
+    }
+    popMatrix();
+  }
+  
+  void displayP(PGraphics pg){
+    pg.pushMatrix();
+    pg.translate(Defaults.Jumplength*0.45,0);
+    for (int i=0;i<3;i++){
+      displayMarkP(pg,i);
+      pg.translate(Defaults.Jumplength,0);
+    }
+    pg.popMatrix();
+  }
+    
+}
+
 abstract class TrackSection{  
   float // startPoint[] =  new float[2], always 0,0
         endPoint[] =  new float[2],
@@ -120,7 +166,9 @@ void doOvalTrack(float x, float y, float w){
   noStroke();
   TrackSection ts = new StraightSection(Defaults.trackStraightLengthMM);
   TrackSection arc180 = new CurvedSection(-HALF_PI,HALF_PI,true);
-  TrackSection arcR90 = new CurvedSection(-HALF_PI,0,true);
+  //TrackSection arcR90 = new CurvedSection(-HALF_PI,0,true);
+  JumpMarker jm = new JumpMarker();
+ 
   pushMatrix();
   pushStyle();
   noStroke();
@@ -131,12 +179,16 @@ void doOvalTrack(float x, float y, float w){
   ts.display();
   translate(ts.nextXInc(),ts.nextYInc());
   rotate(ts.nextAlpha());
+ 
   arc180.display();
   translate(arc180.nextXInc(),arc180.nextYInc());
   rotate(arc180.nextAlpha());
+  
   ts.display();
+  jm.display();
   translate(ts.nextXInc(),ts.nextYInc());
   rotate(ts.nextAlpha());
+
   arc180.display();
   popMatrix();
 }
@@ -147,7 +199,9 @@ void  do_ImageOvalTrack(PGraphics pg,float x, float y, float w){
 
   TrackSection ts = new StraightSection(Defaults.trackStraightLengthMM);
   TrackSection arc180 = new CurvedSection(-HALF_PI,HALF_PI,true);
-  TrackSection arcR90 = new CurvedSection(-HALF_PI,0,true);
+  //TrackSection arcR90 = new CurvedSection(-HALF_PI,0,true);
+  
+  JumpMarker jm = new JumpMarker();
 
   pg.pushMatrix();
   pg.pushStyle();
@@ -156,15 +210,20 @@ void  do_ImageOvalTrack(PGraphics pg,float x, float y, float w){
   // move to starting point!
   pg.translate(x-Defaults.trackStraightLength,
                y-w/2.0); 
+  
   ts.displayP(pg);
   pg.translate(ts.nextXInc(),ts.nextYInc());
   pg.rotate(ts.nextAlpha());
+  
   arc180.displayP(pg);
   pg.translate(arc180.nextXInc(),arc180.nextYInc());
   pg.rotate(arc180.nextAlpha());
+  
   ts.displayP(pg);
+  jm.displayP(pg);
   pg.translate(ts.nextXInc(),ts.nextYInc());
   pg.rotate(ts.nextAlpha());
+  
   arc180.displayP(pg);
  
   pg.popStyle();
@@ -174,13 +233,15 @@ void  do_ImageOvalTrack(PGraphics pg,float x, float y, float w){
 
 void doCurvyTrack(float x, float y, float w){
   TrackSection ts = new StraightSection(Defaults.trackOuterDiameterMM-Defaults.totalWidth/Defaults.mm2pix);
-  TrackSection tsHalf = new StraightSection(0.5*Defaults.trackOuterDiameterMM-Defaults.totalWidth/Defaults.mm2pix);
+  //TrackSection tsHalf = new StraightSection(0.5*Defaults.trackOuterDiameterMM-Defaults.totalWidth/Defaults.mm2pix);
   TrackSection arcR180 = new CurvedSection(-HALF_PI,HALF_PI,true);
   TrackSection arcL180 = new CurvedSection(-HALF_PI,HALF_PI,false);
   TrackSection arcR90 = new CurvedSection(-HALF_PI,0,true);
-  TrackSection arcR45 = new CurvedSection(-HALF_PI,-HALF_PI/2.0,true);
-  TrackSection arcL45 = new CurvedSection(-HALF_PI,-HALF_PI/2.0,false);
-  TrackSection arcL90 = new CurvedSection(-HALF_PI,0,false);
+  //TrackSection arcR45 = new CurvedSection(-HALF_PI,-HALF_PI/2.0,true);
+  //TrackSection arcL45 = new CurvedSection(-HALF_PI,-HALF_PI/2.0,false);
+  //TrackSection arcL90 = new CurvedSection(-HALF_PI,0,false);
+  
+  JumpMarker jm = new JumpMarker();
   
   final float epsilon = 0.5;
   
@@ -190,7 +251,7 @@ void doCurvyTrack(float x, float y, float w){
   
   // move to starting point!
   //translate(x,y);
-   translate(x-Defaults.trackStraightLength,
+  translate(x-Defaults.trackStraightLength,
             y-w/2.0); 
   
   arcR90.display();
@@ -214,6 +275,7 @@ void doCurvyTrack(float x, float y, float w){
   rotate(arcR90.nextAlpha());
 
   ts.display();
+  jm.display();
   translate(ts.nextXInc()-epsilon,ts.nextYInc());
   rotate(ts.nextAlpha());
   
@@ -241,13 +303,15 @@ void  doImageCurvyTrack(PGraphics pg,float x, float y, float w){
   pg.background(Defaults.grey);
   
   TrackSection ts = new StraightSection(Defaults.trackOuterDiameterMM-Defaults.totalWidth/Defaults.mm2pix);
-  TrackSection tsHalf = new StraightSection(0.5*Defaults.trackOuterDiameterMM-Defaults.totalWidth/Defaults.mm2pix);
+  //TrackSection tsHalf = new StraightSection(0.5*Defaults.trackOuterDiameterMM-Defaults.totalWidth/Defaults.mm2pix);
   TrackSection arcR180 = new CurvedSection(-HALF_PI,HALF_PI,true);
   TrackSection arcL180 = new CurvedSection(-HALF_PI,HALF_PI,false);
   TrackSection arcR90 = new CurvedSection(-HALF_PI,0,true);
-  TrackSection arcR45 = new CurvedSection(-HALF_PI,-HALF_PI/2.0,true);
-  TrackSection arcL45 = new CurvedSection(-HALF_PI,-HALF_PI/2.0,false);
-  TrackSection arcL90 = new CurvedSection(-HALF_PI,0,false);
+  //TrackSection arcR45 = new CurvedSection(-HALF_PI,-HALF_PI/2.0,true);
+  //TrackSection arcL45 = new CurvedSection(-HALF_PI,-HALF_PI/2.0,false);
+  //TrackSection arcL90 = new CurvedSection(-HALF_PI,0,false);
+  
+  JumpMarker jm = new JumpMarker();
   
   final float epsilon = 0.5;
   
@@ -280,6 +344,7 @@ void  doImageCurvyTrack(PGraphics pg,float x, float y, float w){
   pg.rotate(arcR90.nextAlpha());
 
   ts.displayP(pg);
+  jm.displayP(pg);
   pg.translate(ts.nextXInc()-epsilon,ts.nextYInc());
   pg.rotate(ts.nextAlpha());
   

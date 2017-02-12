@@ -34,6 +34,10 @@ class defaults{
         trackOuterDiameter,
         totalWidth,
         
+        Jumplength,
+        
+        JumpSpeed,
+        
         buttonsXLimit,
         buttonsYLimit;
                       
@@ -53,7 +57,10 @@ class defaults{
     sensorHalfWidth = 1.5 * (trackBlackWidth + 2*trackWhiteWidth);
     sensorInterceptHalfLength = carWidth/4.0;
     
-    trackerMiddleEpsilon = 35 * mm2pix;
+    trackerMiddleEpsilon = 50 * mm2pix;
+    
+    Jumplength = 450 * mm2pix;
+    JumpSpeed = 800;
 
     totalWidth = trackWhiteWidth * 2 + trackBlackWidth;
     trackAvailableDrivingWidth = trackBlackWidth - carWidth;
@@ -83,9 +90,9 @@ class PidDefaults{
   */      
   static final int nbPIDs = 2;
   
-  float defaultKpFactory[] = {2.04, 0.5}, //4.97, //1.0, //36, //0.72,// _Ku*0.6,
+  float defaultKpFactory[] = {2.14, 1.0}, //4.97, //1.0, //36, //0.72,// _Ku*0.6,
         defaultKiFactory[] = {0.71,0.02}, //0.76, //0.97, //0.38, //0.01, //_Tu/2.0,
-        defaultKdFactory[] = {2.54,1.0}; //2.46; //1.39; //2.44; //_Tu/8.0;
+        defaultKdFactory[] = {2.64,1.2}; //2.46; //1.39; //2.44; //_Tu/8.0;
 
   float Kp[],
         Ki[], 

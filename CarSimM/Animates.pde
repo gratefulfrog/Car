@@ -70,7 +70,7 @@ class Car{
               dyRearAxel = (13.25/15.0)* len + dyFrontAxel,
               dxCenterLine = -0.5 * wid,
               B = dyRearAxel,
-              maxSteeringAngle = radians(25),  
+              maxSteeringAngle = radians(30),  
               maxVelocity =  1000;  //mm par second
               
   float     maxSteeringAngularVelocity = radians(150);  // radians par dt
@@ -95,8 +95,22 @@ class Car{
   final int nbSensors = 2;
   int li[] = new int[nbSensors],
       ri[] = new int[nbSensors];
+      
+  PidSteeringMode currentMode;
+  int currentModeID = 0;
   
-  Car(float x, float y, float theta){
+  float lastKp[], 
+        lastKi[], 
+        lastKd[]; 
+        
+  int jumpStatus = -1;
+  
+  float intoJumpVelocity,
+        jumpInitX,
+        jumpInitY;
+  boolean jumping = false;
+  
+  Car(float x, float y, float theta, PidDefaults pd){
     pos[0] = x;
     pos[1] = y;
     heading = theta;
@@ -108,6 +122,22 @@ class Car{
     else{
       s = loadShape("CarBodyLongerFilled.svg");
     }
+    lastKp = new float[PidDefaults.nbPIDs];
+    lastKi = new float[PidDefaults.nbPIDs];
+    lastKd = new float[PidDefaults.nbPIDs];
+    
+    for (int i=0;i<PidDefaults.nbPIDs;i++){
+      lastKp[i] = pd.Kp[i];
+      lastKi[i] = pd.Ki[i];
+      lastKd[i] = pd.Kd[i];
+    }
+    currentModeID=0;
+    currentMode = //mode[currentModeID];
+                  new PidSteeringMode(0,  // setpoint
+                               pd.Kp[0],
+                               pd.Ki[0],  
+                               pd.Kd[0],
+                               0);
   }
   
   void steeringAngleSet(float a){
@@ -136,6 +166,7 @@ class Car{
   }
   
   void update(float dt){
+    
     // update steering angle
     steeringAngleInc(steeringAngularVelocity*dt);
     final float R = B/abs(sin(steeringAngle)),
@@ -147,8 +178,59 @@ class Car{
     pos[0] += dx;
     pos[1] += dy; 
   }
+  void updateSteeringMode(float dt){
+    if(jumpStatus ==0){  // accelleration!!
+      intoJumpVelocity = jumping ? intoJumpVelocity : velocity;
+      velocitySet(Defaults.JumpSpeed);
+      jumping = true;
+    }
+   if (jumpStatus == 2){  // the eagle has landed, go back to normal speed!
+      velocitySet(intoJumpVelocity);
+      jumping = false;
+    }
+    if(jumpStatus == 1){  // POP! we are airborne!
+      steeringAngularVelocitySet(0);
+      steeringAngleSet(0);
+      // no steering during the air time!
+      return;
+    }
+    
+   if (inMiddle) {
+     if (currentMode.modeID != 1){
+       lastKp[0] = currentMode.controller.Kp.get();
+       lastKi[0] = currentMode.controller.Ki.get();
+       lastKd[0] = currentMode.controller.Kd.get();
+       currentMode.controller.Kp.set(lastKp[1]); 
+       currentMode.controller.Ki.set(lastKi[1]); 
+       currentMode.controller.Kd.set(lastKd[1]);  
+       currentMode.modeID = 1;
+     }
+   }
+   else{
+     if (currentMode.modeID != 0){
+       lastKp[1] = currentMode.controller.Kp.get();
+       lastKi[1] = currentMode.controller.Ki.get();
+       lastKd[1] = currentMode.controller.Kd.get();
+       currentMode.controller.Kp.set(lastKp[0]); 
+       currentMode.controller.Ki.set(lastKi[0]); 
+       currentMode.controller.Kd.set(lastKd[0]);
+       currentMode.modeID = 0;
+     }
+   }
+    // only executed in automatic steering mode!
+    // note that the delta needs to be recomputed before calling the PID!
+    if (!app.steerAngle){
+      steeringAngularVelocitySet(currentMode.controller.update(-steeringError,dt));
+    }
+    else{
+      steeringAngleSet(currentMode.controller.update(-steeringError,dt));
+    }  
+  }
   
   void display(){
+    detectJump();
+    
+    pushStyle();
     pushMatrix();
     translate(pos[0],pos[1]);
     rotate(heading);
@@ -162,6 +244,7 @@ class Car{
     popMatrix();
     ra.display();
     popMatrix();
+    popStyle();
   }
   
   void displaySensor(int  id){
@@ -186,8 +269,9 @@ class Car{
       int x = round(pX - i*sin(ang)),
           y = round(pY + i*cos(ang));
       color c = get(x,y);      
-      if(c != color(0)){
-        ri[id] = i;
+      //if(c != color(0)){
+      if(c == color(255)){
+          ri[id] = i;
         break;
       }
     }
@@ -195,7 +279,8 @@ class Car{
       int x = round(pX - i*sin(ang)),
           y = round(pY + i*cos(ang));
       color c = get(x,y);      
-      if(c != color(0)){
+      //if(c != color(0)){
+      if(c == color(255)){
         li[id] = i;
         break;
       } 
@@ -219,7 +304,7 @@ class Car{
   
   void displayParams(boolean steerAngle){
     int x = 10,
-        nbLines = 14,
+        nbLines = 15,
         y = height - nbLines *20,
         dy = 15;
         
@@ -227,6 +312,8 @@ class Car{
     pushStyle();
     fill(Defaults.blue);
     translate(x,y);
+    showJumpStatus();
+    translate(0,dy);
     text("FrameRate : \t" +round(frameRate),0,0);
     translate(0,dy);
     text("In Middle : \t" + inMiddle,0,0);
@@ -277,6 +364,53 @@ class Car{
     popStyle();
     popMatrix();
   }
+
+  void detectJump(){
+    color c = get(round(pos[0]),round(pos[1]));
+    switch(jumpStatus){
+      case -1:
+        if (c== Defaults.green){
+          jumpStatus++;
+          jumpInitX = pos[0];
+          jumpInitY = pos[1];
+        }
+        break;
+      case 0:
+        float d = dist(pos[0],pos[1],jumpInitX,jumpInitY);
+        if (d>Defaults.Jumplength){
+          jumpStatus++;
+        }
+        break;
+      case 1:
+        d = dist(pos[0],pos[1],jumpInitX,jumpInitY);
+        if (d>2.0*Defaults.Jumplength){
+          jumpStatus++;
+        }
+        break;
+      case 2:
+        jumpStatus=-1;
+        break;
+    }
+  }
+    
+  
+  void showJumpStatus(){
+    switch(jumpStatus){
+      case 0:
+        text("Jump: Acceleration!",0,0);
+        break;
+      case 1:
+        text("Jump: Pop!",0,0);
+        break;
+      case 2:
+        text("Jump: Land!",0,0);
+        break;
+      default:
+        text("No Jump",0,0);
+        break;
+    }
+  }
+      
 }
 
 float formatHeading(float h){
