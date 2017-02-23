@@ -132,6 +132,7 @@ void onBluetoothDataEvent(String who, byte[] data){
       if (m.checkTypetag("ii")){
         remoteCursor.x = m.get(0).intValue();
         remoteCursor.y = m.get(1).intValue();
+        println("(" + remoteCursor.x + "," + remoteCursor.y + ")");
       }
     }
   }

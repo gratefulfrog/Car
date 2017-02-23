@@ -30,6 +30,7 @@ boolean procMsg(char *buf,char*, int bufSize){
   
 ArduComSlave *com;
 
+
 //////////////  std functions ////////////////
 
 void setup(){

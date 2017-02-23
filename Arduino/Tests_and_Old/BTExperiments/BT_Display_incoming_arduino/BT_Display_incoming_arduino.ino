@@ -16,8 +16,8 @@ void setup(){
 }
 
 void loop(){
-   if(bluetooth.available()>0)  {
-    Serial.print(char(bluetooth.read()));
+   if(Serial.available()>0)  {
+    Serial.print(char(Serial.read()));
    }
 }
 
