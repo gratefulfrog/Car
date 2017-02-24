@@ -33,8 +33,8 @@ void onCreate(Bundle savedInstanceState) {
 void onActivityResult(int requestCode, int resultCode, Intent data) {
   bt.onActivityResult(requestCode, resultCode, data);
 }
-
 //********************************************************************
+
 public void settings(){
   fullScreen();
   orientation(LANDSCAPE);

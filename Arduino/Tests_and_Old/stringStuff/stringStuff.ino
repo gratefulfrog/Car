@@ -27,62 +27,91 @@
 
   
 #include "Indirectable.h"
-
-String c2s(char *inBuf, byte len){
-   char lBuf[len+1];
-  for (int i =0;i<len;i++){
-    lBuf[i] =  inBuf[i];
-  }
-  lBuf[len] = '\0';
-  return String(lBuf);
-}
-
-
-float c2f(char *inBuf, byte len){
-  return c2s(inBuf,len).toFloat();
-}
-int c2i(char *inBuf, byte len){
-  return c2s(inBuf,len).toInt();
-}
-
+#include "MessageMgr.h"
 
 void setup() {
 
-  char b1[] = {'1','2','.','3','4'},
-       b2[] = {'1','0'};
-  // put your setup code here, to run once:
   Serial.begin(115200);
   while(!Serial);
-  //Serial.println(c2f(b1,5));
-  //Serial.println(c2i(b2,2));
-
   
+  Serial.println ("\nid A");
   Indirectable ida(10);
   Serial.println(ida.get());
+  
   ida.timesV(2);
+  Serial.println ("times 2");
   Serial.println(ida.get());
+  
   ida.addV(2);
+  Serial.println ("plus 2");
   Serial.println(ida.get());
+  
   ida.set(2);
+  Serial.println ("set to 2");
   Serial.println(ida.get());
   
   Serial.println ("All");
   Indirectable::showAll();
 
+
+  Serial.println ("\nid B");
   Indirectable idb(100);
   Serial.println(idb.get());
+
   idb.timesV(2);
+  Serial.println ("times 2");
   Serial.println(idb.get());
+
   idb.addV(20);
+  Serial.println ("plus 20");
   Serial.println(idb.get());
+  
   idb.set(20);
+  Serial.println ("set to 20");
   Serial.println(idb.get());
+
+  Serial.println ("All");
+  Indirectable::showAll();
+
+  Serial.println ("\nid C");
+  Indirectable idc(1000);
+  Serial.println ("call to the instance");
+  Serial.println(idc.get());
+  
+  Serial.println ("call via the class");
+  Serial.println(Indirectable::get(2,0));
+  
+  Indirectable::timesV(2,2);
+  Serial.println ("times 2");
+  Serial.println(Indirectable::get(2,0));
+  
+  Indirectable::addV(2,20);
+  Serial.println ("plus 20");
+  Serial.println(Indirectable::get(2,0));
+
+  Serial.println ("\nid D");
+  Indirectable idd;
+  
+  Serial.println ("All");
+  Indirectable::showAll();
+
+  Serial.println("\n\n\n");
+  char msg0[8] = {'s','0','0','1','.','0','0','0'};
+  MessageMgr::processMessage(msg0);
+
+  char msg1[8] = {'g','0','1','1','.','0','0','0'};
+  MessageMgr::processMessage(msg1);
+
+  char msg2[8] = {'t','0','2','2','.','0','0','0'};
+  MessageMgr::processMessage(msg2);
+
+  char msg3[8] = {'p','0','3','2','2','2','.','2'};
+  MessageMgr::processMessage(msg3);
 
   Serial.println ("All");
   Indirectable::showAll();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
 
 }
