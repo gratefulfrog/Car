@@ -9,11 +9,11 @@
 
 #include <Arduino.h>
 
-const int LEDPIN = 13;
+const int ledPin = 13;
 
 void setup(){
   Serial.begin(115200);
-  pinMode(LEDPIN,OUTPUT);
+  pinMode(ledPin,OUTPUT);
 }
 
 const int inLimit = 8;
@@ -28,19 +28,19 @@ bool addChar(char c){
 }
 
 void loop(){
-   if(Serial.available()>0)  {
+  if(Serial.available()>0)  {
     if(addChar(char(Serial.read()))){
       for (int i=0;i<8;i++){
-        if(incoming[1] == '0'){
-          digitalWrite(LEDPIN,HIGH);
-        }
-        else{
-          digitalWrite(LEDPIN,LOW);
-        }
         Serial.print(incoming[i]);
       }
+      if(incoming[1] == '1'){
+        digitalWrite(ledPin,HIGH);
+      }
+      else{
+        digitalWrite(ledPin,LOW);
+      }
       nbIn=0;
-    }
-   }
+    } 
+  }
 }
 
