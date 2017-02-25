@@ -1,5 +1,6 @@
 class App{
-  String outgoing = "";
+  String outgoing = "",
+         lastSent = "";
   final int outMsgLen = 8,
             connectedFrameLimit = 100,
             vibTime = 300;
@@ -36,15 +37,17 @@ class App{
  
   void reconnectUI(){
     KetaiKeyboard.hide(applet);
-    text("conenection lost!!! reconnecting...",width/2.0,height/2.0);
+    text("Conenection Lost!  Reconnecting...",width/2.0,height/2.0);
     //println("conenection lost!!! reconnecting...");
   }
   void normalUI(){  
     if(connectedFrameCount ==0){
       KetaiKeyboard.show(applet);  //KetaiKeyboard.toggle(this);
-      text("Sent: " + outgoing,width/2,textS);
-      text("Received: " + incoming,width/2,2*textS);
-      text("Message of the form 'cNNddddd' or 'ENTER' to send; or 'q' to quit",width/2,4*textS);
+      text("Sending: " + outgoing,width/2,textS);
+      text(outMsgLen - outgoing.length() + " Chars Remaining",width/2,textS*2);
+      text("Sent: " + lastSent,width/2,textS*4);
+      text("Received: " + incoming,width/2,5*textS);
+      text("Message 'cNNddddd'; 'ENTER' to send;\nk to Kancel;\n'q' to quit",width/2,7*textS);
       if (inputError){
         //text("I said, '8 chars, 'q' or ENTER'! Pay Attention!",width/2,5*textS);
         vib.vibrate(vibTime);
@@ -59,7 +62,9 @@ class App{
   
   void keyPressed(){
     if ((key >='0' && key <= '9' ) ||
+        (key == 'd')               ||
         (key == 'g')               ||
+        (key == 'm')               ||
         (key == 'p')               ||
         (key == 's')               ||
         (key == 't')               ||
@@ -68,9 +73,14 @@ class App{
       outgoing += key;  
       inputError = false;
     }
+    else if (key == 'k'){  // cancel current outgong
+      outgoing="";
+      inputError = true;
+    }
     else if (keyCode == android.view.KeyEvent.KEYCODE_ENTER){
       if (outgoing.length() % outMsgLen == 0) {
         btm.send(outgoing);
+        lastSent = outgoing;
         outgoing = "";
         inputError=false;
       }

@@ -1,5 +1,7 @@
 String incoming = "";
-int maxIn = 19;
+int maxIn = 19,
+    lastBtTime = 0;
+final int btTimeOut = 1000;
 
 /*
 String btName = "Linvor2",
@@ -97,10 +99,34 @@ class BTManager{
 //Call back method to manage data received
 void onBluetoothDataEvent(String connectAddress, byte[] data){
   //println("Bt incoming from: " + connectAddress);
-  if(incoming.length()> maxIn){
+  /*if(incoming.length()> maxIn){
      incoming = "";
   }
+  */
+  int l = incoming.length(),
+      now = millis();
+  
+  if((now-lastBtTime > btTimeOut)    ||  // been too long, start over!
+     (l>0) && (incoming.charAt(l-1) == ')')){  // we finished a read
+    incoming = "";
+    lastBtTime = millis();
+  }
   for (int i=0;i<data.length;i++){
+    //println(incoming);
+    int curLen = incoming.length();
+    switch (curLen){
+      case 2:
+        incoming +=": (";
+        break;
+      case 0:
+      case 6:
+      case 9:
+        incoming += " ";
+        break;
+    }      
     incoming += char(data[i]);
+  }
+  if(incoming.length()==15){
+    incoming +=")";
   }
 }
