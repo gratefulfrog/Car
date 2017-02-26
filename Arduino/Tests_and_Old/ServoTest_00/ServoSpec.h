@@ -11,7 +11,8 @@ class ServoSpec{
               servoMaxBurnout,    // us = spec - dead band
               servoCenter,        // us
               servoAngularRange,  // degrees from burnout to burnout
-              maxAngularVelocity; // degrees/sec
+              maxAngularVelocity, // degrees/sec
+              servoRefreshRate;   //Hz
   
     // derived servo parameters.
     const float servoCStopDegrees,   // degrees from 0 in center
@@ -25,7 +26,8 @@ class ServoSpec{
               int maxBurnout,        // us not including dead band
               int center,            // us
               int angularRange,      // degrees from burnout to burnout
-              int angularVelocity); // degrees/sec
+              int angularVelocity,   // degrees/sec
+              int refreshRate);      // Hz
     #ifdef DEBUG
       void display();
     #endif

@@ -54,7 +54,9 @@ void loop(){
       (ca>=bs->getSpec().servoCStopDegrees)){
     bs->setAngularVelocity(bs->getCurrentAngularVelocity() * -1.0);
     }
-  bs->update((millis()-theTime)/1000.0);  
-  theTime=millis();  
-  delay(20);  // 20ms = 50Hz
+  unsigned long dt = (millis()-theTime);
+  if (dt>= 1000.0/bs->getSpec().servoRefreshRate){  //  refresh rate
+    bs->update(dt/1000.0);  
+    theTime=millis();  
+  }
 }

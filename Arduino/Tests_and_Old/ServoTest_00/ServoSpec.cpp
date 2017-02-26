@@ -5,13 +5,15 @@ ServoSpec::ServoSpec( int deadBand,          // us
                       int maxBurnout,        // us not including dead band
                       int center,            // us
                       int angularRange,      // degrees from burnout to burnout
-                      int angularVelocity): // degrees/sec
+                      int angularVelocity,   // degrees/sec
+                      int refreshRate):      // Hz
                         servoDeadBand(deadBand),
                         servoMinBurnout(minBurnout+deadBand),
                         servoMaxBurnout(maxBurnout-deadBand),
                         servoCenter(center),        
                         servoAngularRange(angularRange),  
                         maxAngularVelocity(angularVelocity),
+                        servoRefreshRate(refreshRate),
                         servoCStopDegrees(servoAngularRange/2.0),
                         servoCCStopDegrees(-servoCStopDegrees),
                         servoCenterDegrees(0),
@@ -32,6 +34,8 @@ void ServoSpec::display(){
   Serial.println(servoAngularRange);
   Serial.print("maxAngularVelocity:\t");
   Serial.println(maxAngularVelocity);
+  Serial.print("RefreshRate:\t");
+  Serial.println(servoRefreshRate);
   Serial.print("servoCStopDegrees:\t");
   Serial.println(servoCStopDegrees);
   Serial.print("servoCCStopDegrees:\t");
@@ -50,6 +54,7 @@ const ServoSpec savoxSpec(5,   // us dead band
                          2300, // us max
                          1500, // us
                          150,  // degrees from burnout to burnout
-                         60/0.08) ;
-
+                         60/0.08, // 60 degress in 0.08 seconds
+                         200); //Hz refresh rate
+ 
 
