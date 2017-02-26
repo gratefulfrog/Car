@@ -25,10 +25,10 @@ void flashLed(){
 }
 
 void setup(){
-  //#ifdef DEBUG
+  #ifdef DEBUG
     Serial.begin(serialBaudRate);
     while(!Serial);
-  //#endif
+  #endif
   
   // needed to flash the led!
   pinMode(13,OUTPUT);
@@ -41,7 +41,7 @@ void setup(){
   flashLed(); //inform user
   
   // set up for angular velocity sweeping in loop
-  bs->setAngularVelocity(500);
+  bs->setAngularVelocity(0.5);
   servoDelay =  1000.0/bs->getSpec().servoRefreshRate;
   theTime = millis();
 }
@@ -59,7 +59,7 @@ void loop(){
     }
   unsigned long dt = (millis()-theTime);
   if (dt>=servoDelay){  //  refresh rate
-    bs->update(dt/1000.0);  
+    bs->update(dt);  
     theTime=millis();  
   }
 }

@@ -5,7 +5,7 @@ ServoSpec::ServoSpec( int deadBand,          // us
                       int maxBurnout,        // us not including dead band
                       int center,            // us
                       int angularRange,      // degrees from burnout to burnout
-                      int angularVelocity,   // degrees/sec
+                      float angularVelocity,   // degrees/milli sec
                       int refreshRate):      // Hz
                         servoDeadBand(deadBand),
                         servoMinBurnout(minBurnout+deadBand),
@@ -54,7 +54,7 @@ const ServoSpec savoxSpec(5,   // us dead band
                          2300, // us max
                          1500, // us
                          150,  // degrees from burnout to burnout
-                         60/0.08, // 60 degress in 0.08 seconds
+                         60/80.0, // 60 degress in 0.08 seconds
                          50); //Hz refresh rate
  
 

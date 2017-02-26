@@ -34,7 +34,7 @@ float BobServo::getCurrentAngularVelocity() const{
 const ServoSpec& BobServo::getSpec() const{
   return spec;
 }
-BobServo::setAngularVelocity(float angularVelocity) { // degrees/sec
+BobServo::setAngularVelocity(float angularVelocity) { // degrees/milli sec
   #ifdef DEBUG
     Serial.print("setAngularVelocity called: ");
     Serial.print(angularVelocity);
@@ -47,7 +47,7 @@ BobServo::setAngularVelocity(float angularVelocity) { // degrees/sec
 void BobServo::update(float dt) { // update angle % dt in seconds
   setAngle(currentAngle + currentAngularVelocity*dt);  
    //#ifdef DEBUG
-    Serial.print("updat called, dt:\t");
+    Serial.print("update called, dt:\t");
     Serial.println(dt);
   //#endif
 }

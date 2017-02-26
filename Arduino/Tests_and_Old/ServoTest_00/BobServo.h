@@ -19,8 +19,8 @@ class BobServo{
   public:
     BobServo(int pin, const ServoSpec &spec);
     setAngle(float angle);                        // degrees
-    setAngularVelocity(float angularVelocity);    // degrees/sec
-    void update(float dt);                        // update angle % dt in seconds
+    setAngularVelocity(float angularVelocity);    // degrees/milli sec
+    void update(float dt);                        // update angle % dt in milli seconds
     void update(float angularVelocity,float dt);  // set velocity before updating angle
     void sweep(int nbLoops);
     void center();
