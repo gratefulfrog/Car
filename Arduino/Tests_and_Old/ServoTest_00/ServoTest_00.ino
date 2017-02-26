@@ -11,7 +11,8 @@
 const int servoPin= 8;
 BobServo *bs;
 
-unsigned long theTime;
+unsigned long theTime,
+              servoDelay;
 
 // just to inform user wtihout serial montior
 void flashLed(){
@@ -40,22 +41,24 @@ void setup(){
   flashLed(); //inform user
   
   // set up for angular velocity sweeping in loop
-  bs->setAngularVelocity(750);
+  bs->setAngularVelocity(500);
+  servoDelay =  1000.0/bs->getSpec().servoRefreshRate;
   theTime = millis();
 }
 
 
 // this loop demos the use of angular velocity to postion the servo
+// not how the loop cannot keep up if refresh rate is too high
 
 void loop(){
-  float ca = bs->getCurrentAngle();
+  //float ca = bs->getCurrentAngle();
   // if current angle has reached a limit, reverse the direction of traval
-  if ((ca<= bs->getSpec().servoCCStopDegrees) ||
-      (ca>=bs->getSpec().servoCStopDegrees)){
+  if ((bs->getCurrentAngle()<= bs->getSpec().servoCCStopDegrees) ||
+      (bs->getCurrentAngle()>=bs->getSpec().servoCStopDegrees)){
     bs->setAngularVelocity(bs->getCurrentAngularVelocity() * -1.0);
     }
   unsigned long dt = (millis()-theTime);
-  if (dt>= 1000.0/bs->getSpec().servoRefreshRate){  //  refresh rate
+  if (dt>=servoDelay){  //  refresh rate
     bs->update(dt/1000.0);  
     theTime=millis();  
   }

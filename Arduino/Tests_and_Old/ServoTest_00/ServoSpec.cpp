@@ -55,6 +55,6 @@ const ServoSpec savoxSpec(5,   // us dead band
                          1500, // us
                          150,  // degrees from burnout to burnout
                          60/0.08, // 60 degress in 0.08 seconds
-                         200); //Hz refresh rate
+                         50); //Hz refresh rate
  
 
