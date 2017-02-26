@@ -179,12 +179,14 @@ class Car{
     pos[1] += dy; 
   }
   void updateSteeringMode(float dt){
+    // only executed in automatic steering mode!
+    // note that the delta needs to be recomputed before calling the PID!
     if(jumpStatus ==0){  // accelleration!!
       intoJumpVelocity = jumping ? intoJumpVelocity : velocity;
       velocitySet(Defaults.JumpSpeed);
       jumping = true;
     }
-   if (jumpStatus == 2){  // the eagle has landed, go back to normal speed!
+    if (jumpStatus == 2){  // the eagle has landed, go back to normal speed!
       velocitySet(intoJumpVelocity);
       jumping = false;
     }
@@ -195,36 +197,34 @@ class Car{
       return;
     }
     
-   if (inMiddle) {
-     if (currentMode.modeID != 1){
-       lastKp[0] = currentMode.controller.Kp.get();
-       lastKi[0] = currentMode.controller.Ki.get();
-       lastKd[0] = currentMode.controller.Kd.get();
-       currentMode.controller.Kp.set(lastKp[1]); 
-       currentMode.controller.Ki.set(lastKi[1]); 
-       currentMode.controller.Kd.set(lastKd[1]);  
-       currentMode.modeID = 1;
-     }
-   }
-   else{
-     if (currentMode.modeID != 0){
-       lastKp[1] = currentMode.controller.Kp.get();
-       lastKi[1] = currentMode.controller.Ki.get();
-       lastKd[1] = currentMode.controller.Kd.get();
-       currentMode.controller.Kp.set(lastKp[0]); 
-       currentMode.controller.Ki.set(lastKi[0]); 
-       currentMode.controller.Kd.set(lastKd[0]);
-       currentMode.modeID = 0;
-     }
-   }
-    // only executed in automatic steering mode!
-    // note that the delta needs to be recomputed before calling the PID!
+    if (inMiddle) {
+      if (currentMode.modeID != 1){
+        lastKp[0] = currentMode.controller.Kp.get();
+        lastKi[0] = currentMode.controller.Ki.get();
+        lastKd[0] = currentMode.controller.Kd.get();
+        currentMode.controller.Kp.set(lastKp[1]); 
+        currentMode.controller.Ki.set(lastKi[1]); 
+        currentMode.controller.Kd.set(lastKd[1]);  
+        currentMode.modeID = 1;
+      }
+    }
+    else{
+      if (currentMode.modeID != 0){
+        lastKp[1] = currentMode.controller.Kp.get();
+        lastKi[1] = currentMode.controller.Ki.get();
+        lastKd[1] = currentMode.controller.Kd.get();
+        currentMode.controller.Kp.set(lastKp[0]); 
+        currentMode.controller.Ki.set(lastKi[0]); 
+        currentMode.controller.Kd.set(lastKd[0]);
+        currentMode.modeID = 0;
+      }
+    }
     if (!app.steerAngle){
       steeringAngularVelocitySet(currentMode.controller.update(-steeringError,dt));
     }
     else{
       steeringAngleSet(currentMode.controller.update(-steeringError,dt));
-    }  
+    }
   }
   
   void display(){
