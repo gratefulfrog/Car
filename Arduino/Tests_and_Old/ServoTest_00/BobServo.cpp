@@ -52,6 +52,19 @@ void BobServo::update(float dt) { // update angle % dt in seconds
   //#endif
 }
 
+void BobServo::updateMicros(float dtMicros){
+  // update angle % dt in MICRO seconds using accumulator
+  // using accumulator to only call setAngle when outside dead band
+  microSecAccumulator += dtMicros;
+  float settingAngle = currentAngularVelocity*microSecAccumulator/1000.0;
+  float servoDeltaUSValue = map(settingAngle,spec.servoCCStopDegrees,spec.servoCStopDegrees,spec.servoMinBurnout,spec.servoMaxBurnout);
+  if (abs(servoDeltaUSValue)>spec.servoDeadBand){
+    // then we can do a set!
+    setAngle(currentAngle + settingAngle);
+    microSecAccumulator =0;
+  }
+}
+
 void BobServo::update(float angularVelocity,float dt){  // set velocity before updating angle
   setAngularVelocity(angularVelocity);
   update(dt);
@@ -61,7 +74,7 @@ void BobServo::center(){
   setAngularVelocity(0);
 }
 
-void BobServo::goCLimit() { // set to clockwise endpoint
+void BobServo::goCLim() { // set to clockwise endpoint
   setAngle(spec.servoCStopDegrees);
 }
 void BobServo::goCCLim(){ // set to counter clockwise endpoint

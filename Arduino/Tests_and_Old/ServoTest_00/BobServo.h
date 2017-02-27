@@ -14,6 +14,8 @@ class BobServo{
     float currentAngle,            // degrees
           currentAngularVelocity;  // degrees/sec
 
+    float microSecAccumulator = 0;
+
     void goLim(int dir); // -1 == Counter Clockwise; 1 == Clockwise
     
   public:
@@ -21,10 +23,11 @@ class BobServo{
     setAngle(float angle);                        // degrees
     setAngularVelocity(float angularVelocity);    // degrees/milli sec
     void update(float dt);                        // update angle % dt in milli seconds
+    void updateMicros(float dtMicros);            // update angle % dt in MICRO seconds using accumulator
     void update(float angularVelocity,float dt);  // set velocity before updating angle
     void sweep(int nbLoops);
     void center();
-    void goCLimit();                                // set to clockwise endpoint
+    void goCLim();                                // set to clockwise endpoint
     void goCCLim();                                 // set to counter clockwise endpoint
     float getCurrentAngle() const;
     float getCurrentAngularVelocity() const;

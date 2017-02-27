@@ -11,8 +11,7 @@
 const int servoPin= 8;
 BobServo *bs;
 
-unsigned long theTime,
-              servoDelay;
+unsigned long servoDelay;
 
 // just to inform user wtihout serial montior
 void flashLed(){
@@ -22,6 +21,13 @@ void flashLed(){
     digitalWrite(13,LOW);
     delay(100);
   }
+}
+
+void doSweep(int n){
+  for (int i=0;i<n;i++){
+    bs->sweep(1);
+  }
+  flashLed(); //inform user
 }
 
 void setup(){
@@ -36,30 +42,73 @@ void setup(){
   bs = new BobServo(servoPin, savoxSpec);
   flashLed();  //inform user
 
-  // do a single sweep to show it works ok!
-  bs->sweep(1);
-  flashLed(); //inform user
-  
-  // set up for angular velocity sweeping in loop
-  bs->setAngularVelocity(0.5);
-  servoDelay =  1000.0/bs->getSpec().servoRefreshRate;
-  theTime = millis();
 }
 
 
 // this loop demos the use of angular velocity to postion the servo
 // not how the loop cannot keep up if refresh rate is too high
 
-void loop(){
-  //float ca = bs->getCurrentAngle();
-  // if current angle has reached a limit, reverse the direction of traval
-  if ((bs->getCurrentAngle()<= bs->getSpec().servoCCStopDegrees) ||
-      (bs->getCurrentAngle()>=bs->getSpec().servoCStopDegrees)){
-    bs->setAngularVelocity(bs->getCurrentAngularVelocity() * -1.0);
-    }
-  unsigned long dt = (millis()-theTime);
-  if (dt>=servoDelay){  //  refresh rate
-    bs->update(dt);  
-    theTime=millis();  
+void microLoop(int n){
+  unsigned long theMicroTime = micros();
+  bs->setAngularVelocity(0.5);
+  n *=2;
+  while(n){
+    if ((bs->getCurrentAngle()<= bs->getSpec().servoCCStopDegrees) ||
+         (bs->getCurrentAngle()>=bs->getSpec().servoCStopDegrees)){
+      bs->setAngularVelocity(bs->getCurrentAngularVelocity() * -1.0);
+      n--;
+      }
+    unsigned long dtM = (micros()-theMicroTime);
+    bs->updateMicros(dtM);  
+    theMicroTime=micros();    
   }
+  bs->center();
+  flashLed();
 }
+
+void milliLoop(int n){
+  unsigned long theMillisTime = millis();
+  float servoDelay =  1000.0/bs->getSpec().servoRefreshRate;
+  bs->setAngularVelocity(0.5);
+  n *= 2;            
+  bool moving = false;   
+  while(n){
+    if (moving &&
+        ((bs->getCurrentAngle()<= bs->getSpec().servoCCStopDegrees) ||
+         (bs->getCurrentAngle()>=bs->getSpec().servoCStopDegrees))){
+      bs->setAngularVelocity(bs->getCurrentAngularVelocity() * -1.0);
+      n--;
+      moving = false;
+      }
+    
+    unsigned long dt = (millis()-theMillisTime);
+    if (dt>=servoDelay){  //  %refresh rate
+      bs->update(dt);  
+      theMillisTime=millis(); 
+      moving = true; 
+    }
+  }
+  bs->center();
+  flashLed();
+}
+
+void backForth (int n){
+  while(n--){
+    bs->goCLim();
+    delay(200);
+    bs->goCCLim();
+    delay(200);
+  }
+  bs->center();
+  flashLed();
+}
+
+void loop(){
+  doSweep(1);
+  backForth(2);
+  microLoop(1);
+  backForth(2);
+  milliLoop(1);
+  backForth(5);
+}
+
