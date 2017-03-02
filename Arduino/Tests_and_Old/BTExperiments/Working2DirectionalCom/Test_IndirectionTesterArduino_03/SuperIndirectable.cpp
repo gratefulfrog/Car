@@ -1,7 +1,7 @@
 #include "SuperIndirectable.h"
 
 SuperIndirectable *SuperIndirectable::iVec[SuperIndirectable::maxI];
-int SuperIndirectable::nextI = 0;
+byte SuperIndirectable::nextI = 0;
 
 void SuperIndirectable::recordInstance(SuperIndirectable *instance){
   // add instane to vector, or fail quietly...
@@ -10,7 +10,7 @@ void SuperIndirectable::recordInstance(SuperIndirectable *instance){
   }
 }
 
-SuperIndirectable *SuperIndirectable::getInstance(int index){
+SuperIndirectable *SuperIndirectable::getInstance(byte index){
   // return index or NULL if failure
   if (index>=SuperIndirectable::nextI){
     return NULL;
@@ -21,45 +21,45 @@ SuperIndirectable *SuperIndirectable::getInstance(int index){
 }
 
 void SuperIndirectable::showAll(){
-  for(int i=0;i<SuperIndirectable::nextI;i++){
+  for(byte i=0;i<SuperIndirectable::nextI;i++){
     Serial.print(String(i) + " : ");
     Serial.println(iVec[i]->get());
   }
 }
 
-bool SuperIndirectable::indexOk(int i){
+bool SuperIndirectable::indexOk(byte i){
   return i < nextI;
 }
 
-float SuperIndirectable::get(int index,float) { 
+float SuperIndirectable::get(byte index,float) { 
   #ifdef DEBUG
   Serial.println("SuperIndirectable::get(" + String(index) +")");
   //Serial.println("return: " +  String(SuperIndirectable::getInstance(index)->get()));
   #endif
   return SuperIndirectable::getInstance(index)->get();
 }
-float SuperIndirectable::set(int index,float v){
+float SuperIndirectable::set(byte index,float v){
   #ifdef DEBUG
   Serial.println("SuperIndirectable::set(" + String(index) + "," + String(v) + ")");
   //Serial.println("return: " +  String(SuperIndirectable::getInstance(index)->set(v)));
   #endif
   return SuperIndirectable::getInstance(index)->set(v);
 }
-float SuperIndirectable::plusV(int index,float v){
+float SuperIndirectable::plusV(byte index,float v){
   #ifdef DEBUG
   Serial.println("SuperIndirectable::plusV(" + String(index) + "," + String(v) + ")");
   //Serial.println("return: " +  String(SuperIndirectable::getInstance(index)->plusV(v)));
   #endif
   return SuperIndirectable::getInstance(index)->plusV(v);
 }
-float SuperIndirectable::minusV(int index,float v){
+float SuperIndirectable::minusV(byte index,float v){
   #ifdef DEBUG
   Serial.println("SuperIndirectable::minusV(" + String(index) + "," + String(v) + ")");
   //Serial.println("return: " +  String(SuperIndirectable::getInstance(index)->minusV(v)));
   #endif
   return SuperIndirectable::getInstance(index)->minusV(v);
 }
-float SuperIndirectable::multV(int index,float v){
+float SuperIndirectable::multV(byte index,float v){
   #ifdef DEBUG
   Serial.println("SuperIndirectable::multV(" + String(index) + "," + String(v) + ")");
   //Serial.println("return: " +  String(SuperIndirectable::getInstance(index)->multV(v)));
@@ -67,7 +67,7 @@ float SuperIndirectable::multV(int index,float v){
   return SuperIndirectable::getInstance(index)->multV(v);
 
 }
-float SuperIndirectable::divV(int index,float v){
+float SuperIndirectable::divV(byte index,float v){
   #ifdef DEBUG
   Serial.println("SuperIndirectable::divV(" + String(index) + "," + String(v) + ")");
   //Serial.println("return: " +  String(SuperIndirectable::getInstance(index)->divV(v)));

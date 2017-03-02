@@ -29,6 +29,7 @@
 #include "Spec.h"
 #include "Car.h"
 #include "SuperIndirectable.h"
+#include "Controller.h"
 
 void setup(){
   Serial.begin(9600);

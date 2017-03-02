@@ -7,9 +7,9 @@
 class SuperIndirectable{
   protected:
   // statics
-    static const int maxI = 30;
+    static const byte maxI = 30;
     static SuperIndirectable * iVec[maxI];
-    static int nextI;
+    static byte nextI;
 
     static void recordInstance(SuperIndirectable *instance);
 
@@ -28,17 +28,17 @@ class SuperIndirectable{
     float divV(float v){ return valSet(val/v);}
 
   // statics
-    static SuperIndirectable *getInstance(int index);
+    static SuperIndirectable *getInstance(byte index);
     static void showAll();
-    static bool indexOk(int);
+    static bool indexOk(byte);
     // note that the static version of get takes an unused float argument so that
     // it will fit the typede sFuncPtr
-    static float get(int index, float);
-    static float set(int index,float v);
-    static float plusV(int index,float v);
-    static float minusV(int index, float v);
-    static float multV(int index, float v);
-    static float divV(int index, float v);
+    static float get(byte index, float);
+    static float set(byte index,float v);
+    static float plusV(byte index,float v);
+    static float minusV(byte index, float v);
+    static float multV(byte index, float v);
+    static float divV(byte index, float v);
 };
 
 class SISpec:public SuperIndirectable{
