@@ -28,12 +28,13 @@
 #include <Arduino.h>
 #include "Spec.h"
 #include "Car.h"
+#include "SuperIndirectable.h"
 
 void setup(){
   Serial.begin(9600);
   while(!Serial);
 
-  Serial.println("Starting up!");
+  Serial.println("\nStarting up!");
 
   Spec spec =  Spec();
   Car car = Car(20,0.5,spec);
@@ -54,11 +55,42 @@ void setup(){
   Serial.print("car.angle.get(): ");
   Serial.println(car.angle.get());
 
-  Serial.print("car.angle.set(1000): ");
-  Serial.println(car.angle.set(1000));
+  Serial.print("car.angle.set(-1000): ");
+  Serial.println(car.angle.set(-1000));
   Serial.print("car.angle.get(): ");
   Serial.println(car.angle.get());
 
+  Serial.println("SuperIndirectable::showAll");
+  SuperIndirectable::showAll();
+
+  Serial.println("\nStarting Indexed Indirection!");
+
+  Serial.print("SuperIndirectable::get(0,0): ");
+  Serial.println(SuperIndirectable::get(0,0));
+  Serial.print("SuperIndirectable::get(1,0): ");
+  Serial.println(SuperIndirectable::get(1,0));
+  
+  Serial.print("SuperIndirectable::set(0,-150): ");
+  Serial.println(SuperIndirectable::set(0,-150));
+  Serial.print("SuperIndirectable::get(0,0): ");
+  Serial.println(SuperIndirectable::get(0,0));
+
+  
+  Serial.print("SuperIndirectable::set(0,10): ");
+  Serial.println(SuperIndirectable::set(0,10));
+  Serial.print("SuperIndirectable::get(0,0): ");
+  Serial.println(SuperIndirectable::get(0,0));
+
+  Serial.print("SuperIndirectable::set(0,1000): ");
+  Serial.println(SuperIndirectable::set(0,1000));
+  Serial.print("SuperIndirectable::get(0,0): ");
+  Serial.println(SuperIndirectable::get(0,0));
+
+  Serial.println("SuperIndirectable::showAll");
+  SuperIndirectable::showAll();
+
+
+  Serial.println("Done.");
 }
 
 void loop(){

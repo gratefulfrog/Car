@@ -22,6 +22,7 @@ SuperIndirectable *SuperIndirectable::getInstance(int index){
 
 void SuperIndirectable::showAll(){
   for(int i=0;i<SuperIndirectable::nextI;i++){
+    Serial.print(String(i) + " : ");
     Serial.println(iVec[i]->get());
   }
 }
@@ -29,35 +30,7 @@ void SuperIndirectable::showAll(){
 bool SuperIndirectable::indexOk(int i){
   return i < nextI;
 }
-/*
-SuperIndirectable::SuperIndirectable(){
-  val=0;
-  SuperIndirectable::recordInstance(this);
-}
-SuperIndirectable::SuperIndirectable(float v){
-  val=v;
-  SuperIndirectable::recordInstance(this);
-}
 
-float SuperIndirectable::get() const { 
-  return val;
-}
-float SuperIndirectable::set(float v){
-  return val = v;
-}
-float SuperIndirectable::plusV(float v){
-  return val += v;
-}
-float SuperIndirectable::minusV(float v){
-  return val -= v;
-}
-float SuperIndirectable::multV(float v){
-  return val *= v;    
-}
-float SuperIndirectable::divV(float v){
-  return val /= v;    
-}
-*/
 float SuperIndirectable::get(int index,float) { 
   #ifdef DEBUG
   Serial.println("SuperIndirectable::get(" + String(index) +")");
