@@ -1,63 +1,3 @@
-
-class Wheel{
-  final float w = Defaults.wheelWidth,
-              h = Defaults.wheelHeight,
-              pos[] = {0,0};
-              
-  Wheel(float x, float y){
-    pos[0] = x;
-    pos[1] = y;
-  }
-  
-  void display(){
-    pushStyle();
-    stroke(Defaults.wheelColor);
-    fill(Defaults.wheelColor);
-    rectMode(CENTER);
-    rect(pos[0],pos[1],w,h);
-    popStyle();
-  }
-}
-
-class Axel{
-  final float w = Defaults.axelWidth,
-              wt = 4,
-              pos[] = {0,0};
-              
-  Axel(float x, float y){
-    pos[0] = x-w/2.0;
-    pos[1] = y;
-  }
-  
-  void display(){
-    pushStyle();
-    stroke(Defaults.wheelColor);
-    strokeWeight(wt);
-    fill(Defaults.wheelColor);
-    line(pos[0],pos[1],pos[0]+w,pos[1]);
-    popStyle();
-  }
-}
-
-class DriveAxel{
-  Wheel wl, wr;
-  Axel a;
-  
-  DriveAxel(float x, float y){
-    // x,y are center of horizontal axel
-    a = new Axel(x,y);
-    wl = new Wheel(a.pos[0],y);
-    wr = new Wheel(a.pos[0] + a.w,y);
-  }
-  
-  void display(){
-    wl.display();
-    a.display();
-    wr.display();
-  }   
-}   
-  
-     
 class Car{
   DriveAxel fa, ra;
   PShape s;
@@ -178,7 +118,7 @@ class Car{
     pos[0] += dx;
     pos[1] += dy; 
   }
-  void updateSteeringMode(float dt){
+  void updateSteeringMode(unsigned long dt){  // time in ms
     // only executed in automatic steering mode!
     // note that the delta needs to be recomputed before calling the PID!
     if(jumpStatus ==0){  // accelleration!!

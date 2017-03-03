@@ -61,9 +61,7 @@ class DriveAxel{
 class Car{
   DriveAxel fa, ra;
   PShape s;
-  
-  boolean inMiddle = false;
-  
+    
   final float len = Defaults.carHieght,
               wid = Defaults.carWidth,
               dyFrontAxel = -0.255 * len,
@@ -83,25 +81,15 @@ class Car{
 
   final color carColor = Defaults.red;
   
-  float steeringError = 0,   // in pixels!
-        maxSteeringError = 0,
-        minSteeringError = 0;
-  float maxSetSteeringAngularVelocity = 0,  // in percent of max per app.DeltaT
-        minSetSteeringAngularVelocity = 0;
+  float distanceFrontToWhite,
+        headingDifferenceWithTrack,
+        distanceMiddle2White;
   
-  float maxSetSteeringAngle = 0,  // in  percent of max per app.DeltaT
-        minSetSteeringAngle = 0;
+  boolean inMiddle = false;
         
   final int nbSensors = 2;
   int li[] = new int[nbSensors],
       ri[] = new int[nbSensors];
-      
-  PidSteeringMode currentMode;
-  int currentModeID = 0;
-  
-  float lastKp[], 
-        lastKi[], 
-        lastKd[]; 
         
   int jumpStatus = -1;
   
@@ -110,10 +98,12 @@ class Car{
         jumpInitY;
   boolean jumping = false;
   
-  Car(float x, float y, float theta, PidDefaults pd){
+  Car(float x, float y, float theta, float distMiddleToWhite){
     pos[0] = x;
     pos[1] = y;
     heading = theta;
+    distanceMiddle2White = distMiddleToWhite;
+    
     fa = new DriveAxel(0,0);
     ra = new DriveAxel(0,B);
     if (ISJS){
@@ -122,38 +112,16 @@ class Car{
     else{
       s = loadShape("CarBodyLongerFilled.svg");
     }
-    lastKp = new float[PidDefaults.nbPIDs];
-    lastKi = new float[PidDefaults.nbPIDs];
-    lastKd = new float[PidDefaults.nbPIDs];
-    
-    for (int i=0;i<PidDefaults.nbPIDs;i++){
-      lastKp[i] = pd.Kp[i];
-      lastKi[i] = pd.Ki[i];
-      lastKd[i] = pd.Kd[i];
-    }
-    currentModeID=0;
-    currentMode = //mode[currentModeID];
-                  new PidSteeringMode(0,  // setpoint
-                               pd.Kp[0],
-                               pd.Ki[0],  
-                               pd.Kd[0],
-                               0);
   }
   
   void steeringAngleSet(float a){
     steeringAngle = max(-maxSteeringAngle,min(a,maxSteeringAngle));
-    float pct = 100.0*(steeringAngle/maxSteeringAngle);
-    minSetSteeringAngle = min(minSetSteeringAngle,pct);
-    maxSetSteeringAngle = max(maxSetSteeringAngle,pct);
   }
   void steeringAngleInc(float inc){
     steeringAngleSet(inc+steeringAngle);
   }
   void steeringAngularVelocitySet(float a){
     steeringAngularVelocity = max(-maxSteeringAngularVelocity,min(a,maxSteeringAngularVelocity));
-    float pct = 100.0*(steeringAngularVelocity/maxSteeringAngularVelocity);
-    minSetSteeringAngularVelocity = min(minSetSteeringAngularVelocity,pct);
-    maxSetSteeringAngularVelocity = max(maxSetSteeringAngularVelocity,pct);
   }
   void steeringAngularVelocityInc(float inc){
     steeringAngularVelocitySet(inc+steeringAngularVelocity);
@@ -178,10 +146,8 @@ class Car{
     pos[0] += dx;
     pos[1] += dy; 
   }
-  void updateSteeringMode(float dt){
-    // only executed in automatic steering mode!
-    // note that the delta needs to be recomputed before calling the PID!
-    if(jumpStatus ==0){  // accelleration!!
+  void updateSteeringAndVelocity(){
+   if(jumpStatus ==0){  // accelleration!!
       intoJumpVelocity = jumping ? intoJumpVelocity : velocity;
       velocitySet(Defaults.JumpSpeed);
       jumping = true;
@@ -190,43 +156,25 @@ class Car{
       velocitySet(intoJumpVelocity);
       jumping = false;
     }
-    if(jumpStatus == 1){  // POP! we are airborne!
+    if(jumpStatus != -1){  // POP! we are airborne!
       steeringAngularVelocitySet(0);
       steeringAngleSet(0);
-      // no steering during the air time!
+      // no steering during the air time or into the jump!
       return;
     }
-    
-    if (inMiddle) {
-      if (currentMode.modeID != 1){
-        lastKp[0] = currentMode.controller.Kp.get();
-        lastKi[0] = currentMode.controller.Ki.get();
-        lastKd[0] = currentMode.controller.Kd.get();
-        currentMode.controller.Kp.set(lastKp[1]); 
-        currentMode.controller.Ki.set(lastKi[1]); 
-        currentMode.controller.Kd.set(lastKd[1]);  
-        currentMode.modeID = 1;
-      }
+    // if inMiddle, turn the steering to the opposite of the angular differnce,
+    // else turn the wheels to min( 90-angleDiff/2.0 constrained of course to physical limits
+    float signOfAngle =  distanceFrontToWhite>=distanceMiddle2White ? -1.0 : 1.0;
+    if (inMiddle){
+      println("In Middle, heading diff", degrees(headingDifferenceWithTrack));
+      steeringAngleSet(signOfAngle*abs(headingDifferenceWithTrack));
     }
     else{
-      if (currentMode.modeID != 0){
-        lastKp[1] = currentMode.controller.Kp.get();
-        lastKi[1] = currentMode.controller.Ki.get();
-        lastKd[1] = currentMode.controller.Kd.get();
-        currentMode.controller.Kp.set(lastKp[0]); 
-        currentMode.controller.Ki.set(lastKi[0]); 
-        currentMode.controller.Kd.set(lastKd[0]);
-        currentMode.modeID = 0;
-      }
-    }
-    if (!app.steerAngle){
-      steeringAngularVelocitySet(currentMode.controller.update(-steeringError,dt));
-    }
-    else{
-      steeringAngleSet(currentMode.controller.update(-steeringError,dt));
-    }
+      println("Not in Middle, heading diff", degrees(headingDifferenceWithTrack));
+      steeringAngleSet(signOfAngle*(-HALF_PI+(headingDifferenceWithTrack)/2.0)); //*(velocity/100.0)));
+    }  
   }
-  
+
   void display(){
     detectJump();
     
@@ -248,7 +196,7 @@ class Car{
     popMatrix();
     popStyle();
   }
-  
+
   void displaySensor(int  id){
     float y = id *B;
     pushStyle();
@@ -258,7 +206,7 @@ class Car{
     line(-Defaults.sensorHalfWidth,y,Defaults.sensorHalfWidth,y);
     popStyle();
   }
-  
+
   void displaySensorIntercepts(int id){
     float ang = heading-HALF_PI;
     float yOffset = id * B;
@@ -293,85 +241,17 @@ class Car{
     line(li[id],yOffset-Defaults.sensorInterceptHalfLength,li[id],yOffset+Defaults.sensorInterceptHalfLength);
     line(ri[id],yOffset-Defaults.sensorInterceptHalfLength,ri[id],yOffset+Defaults.sensorInterceptHalfLength);
     popStyle();
-    if (id ==0){
-      steeringError = li[id]+ri[id];
-      inMiddle = abs(steeringError) <= Defaults.trackerMiddleEpsilon;
-      maxSteeringError = max(maxSteeringError,steeringError*100.0/Defaults.trackAvailableDrivingWidth);
-      minSteeringError = min(minSteeringError,steeringError*100.0/Defaults.trackAvailableDrivingWidth);
-    }
-    else if (id==1){ // second sensor
-      steeringError = inMiddle ? atan2(B,ri[1]-ri[0]) : steeringError;
-    }
-  }
-  
-  void displayParams(boolean steerAngle){
-    int x = 10,
-        nbLines = 15,
-        y = height - nbLines *20,
-        dy = 15;
-        
-    pushMatrix();
-    pushStyle();
-    fill(Defaults.blue);
-    translate(x,y);
-    showJumpStatus();
-    translate(0,dy);
-    text("FrameRate : \t" +round(frameRate),0,0);
-    translate(0,dy);
-    text("In Middle : \t" + inMiddle,0,0);
-    translate(0,dy);
-    text("Velocity : \t" + round(velocity),0,0);
-    translate(0,dy);
-    text("Heading : \t" + round(formatHeading(degrees(heading))),0,0);
-    translate(0,dy);
-    text("Position : \t" + round(pos[0]) + ", " + round(pos[1]),0,0);
-    translate(0,dy);
-    text("Steering Angle Range : \t" +  "[" +  nf(minSetSteeringAngle,1,1) + "," + nf(maxSetSteeringAngle,1,1) + "]" ,0,0);
-    translate(0,dy);
-    pushStyle();
-    if (!steerAngle){
-      fill(Defaults.green);
-    }
-    text("Steering Angular Velocity range (%) : \t" + "[" +  nf(minSetSteeringAngularVelocity,1,1) + "," + nf(maxSetSteeringAngularVelocity,1,1) + "]" ,0,0);
-    popStyle();
-    translate(0,dy);
-    text("Steering power : \t" + round(degrees(app.sInc)),0,0);
-    translate(0,dy);
-    text("Steering error Range (%) : \t" + "[" + nf(minSteeringError,1,1) + ", " + nf(maxSteeringError,1,1) + "]",0,0);
-    translate(0,dy);
-    text("Click the window, then use the Arrow keys and",0,0);
-    translate(0,dy);
-    text("'A' : toggle angular velocity steering",0,0);
-    translate(0,dy);
-    text("'D' : save current PID parameters as defaults",0,0);
-    translate(0,dy);
-    pushStyle();
-    if (app.manualSteering){
-      fill(Defaults.green);
-    }
-    text("'M' : toggle manual steering",0,0);
-    popStyle();
-    translate(0,dy);
-    text("'P' : Pause",0,0);
-    translate(0,dy);
-    text("'R' : Reset",0,0);
-    translate(0,dy);
-    text("'S' : Steer Straight",0,0);
-    translate(0,dy);
-    text("'V' : reset Steering Angle Range",0,0);
-    translate(0,dy);
-    text("'X/C' : dec/inc Steering Power",0,0);
-    translate(0,dy);    
-    text("Mouse Click to change tracks",0,0);
-    popStyle();
-    popMatrix();
-  }
-
+    distanceFrontToWhite = ri[0];
+    inMiddle = abs(distanceFrontToWhite-distanceMiddle2White) <= Defaults.trackerMiddleEpsilon;
+    //println("ri[0], distanceMiddle2White, Defaults.trackerMiddleEpsilon", ri[0], distanceMiddle2White, Defaults.trackerMiddleEpsilon);
+    headingDifferenceWithTrack = -atan2(ri[1]-ri[0],B);
+  }  
+    
   void detectJump(){
     color c = get(round(pos[0]),round(pos[1]));
     switch(jumpStatus){
       case -1:
-        if (green(c) !=0){ //== Defaults.green){
+        if (green(c) >180 && red(c) < 50 && blue(c)< 50){ //!=0){ //== Defaults.green){
           jumpStatus++;
           jumpInitX = pos[0];
           jumpInitY = pos[1];
@@ -395,7 +275,54 @@ class Car{
     }
   }
     
-  
+  void displayParams(){
+    int x = 10,
+        nbLines = 11,
+        y = height - nbLines *20,
+        dy = 15;
+        
+    pushMatrix();
+    pushStyle();
+    fill(Defaults.blue);
+    translate(x,y);
+    showJumpStatus();
+    translate(0,dy);
+    text("FrameRate : \t" +round(frameRate),0,0);
+    translate(0,dy);
+    text("In Middle : \t" + inMiddle,0,0);
+    translate(0,dy);
+    text("Velocity : \t" + round(velocity),0,0);
+    translate(0,dy);
+    text("Heading : \t" + round(formatHeading(degrees(heading))),0,0);
+    translate(0,dy);
+    text("Position : \t" + round(pos[0]) + ", " + round(pos[1]),0,0);
+    translate(0,dy);
+    text("Steering Angle: \t" +  degrees(steeringAngle),0,0);
+    translate(0,dy);
+    text("Steering power : \t" + round(degrees(app.sInc)),0,0);
+    translate(0,dy);
+    text("Click the window, then use the Arrow keys and",0,0);
+    translate(0,dy);
+    pushStyle();
+    if (app.manualSteering){
+      fill(Defaults.green);
+    }
+    text("'M' : toggle manual steering",0,0);
+    popStyle();
+    translate(0,dy);
+    text("'P' : Pause",0,0);
+    translate(0,dy);
+    text("'R' : Reset",0,0);
+    translate(0,dy);
+    text("'S' : Steer Straight",0,0);
+    translate(0,dy);
+    text("'X/C' : dec/inc Steering Power",0,0);
+    translate(0,dy);    
+    text("Mouse Click to change tracks",0,0);
+    popStyle();
+    popMatrix();
+  }
+
   void showJumpStatus(){
     switch(jumpStatus){
       case 0:
@@ -412,8 +339,9 @@ class Car{
         break;
     }
   }
-      
 }
+  
+  
 
 float formatHeading(float h){
   float res = h %360;
