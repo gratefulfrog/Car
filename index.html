@@ -18,6 +18,9 @@
     <p> A single PID manages all phases of driving. In this mode, the car has a tendency to oscillate on straight track,  but it can attain huge speeds.
       The cause of the oscillation would seem to be the overly simplified measured variable which is simply the difference between the distances to the two white lines.</p>
 
+    <h2> <a href="noPID.html">No Pid control</a></h2>
+    <p> In this version we simply nagivate the car to the middle of the track, then keep it aligned with the track.
+      This model is extremely easy to implement, and performs pretty much as well as the simple single PID control. It does not perform as well as the modal control below.</p>
     
     <h2> <a href="modal.html">Modal control</a></h2>
     <p> PID parameters are tuned to specific driving modes. In this version, a second sensor provides
