@@ -166,11 +166,11 @@ class Car{
     // else turn the wheels to min( 90-angleDiff/2.0 constrained of course to physical limits
     float signOfAngle =  distanceFrontToWhite>=distanceMiddle2White ? -1.0 : 1.0;
     if (inMiddle){
-      println("In Middle, heading diff", degrees(headingDifferenceWithTrack));
+      //println("In Middle, heading diff", degrees(headingDifferenceWithTrack));
       steeringAngleSet(signOfAngle*abs(headingDifferenceWithTrack));
     }
     else{
-      println("Not in Middle, heading diff", degrees(headingDifferenceWithTrack));
+      //println("Not in Middle, heading diff", degrees(headingDifferenceWithTrack));
       steeringAngleSet(signOfAngle*(-HALF_PI+(headingDifferenceWithTrack)/2.0)); //*(velocity/100.0)));
     }  
   }
@@ -297,7 +297,7 @@ class Car{
     translate(0,dy);
     text("Position : \t" + round(pos[0]) + ", " + round(pos[1]),0,0);
     translate(0,dy);
-    text("Steering Angle: \t" +  degrees(steeringAngle),0,0);
+    text("Steering Angle: \t" +  round(degrees(steeringAngle)),0,0);
     translate(0,dy);
     text("Steering power : \t" + round(degrees(app.sInc)),0,0);
     translate(0,dy);
