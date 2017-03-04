@@ -164,14 +164,14 @@ class Car{
     }
     // if inMiddle, turn the steering to the opposite of the angular differnce,
     // else turn the wheels to min( 90-angleDiff/2.0 constrained of course to physical limits
-    float signOfAngle =  distanceFrontToWhite>=distanceMiddle2White ? -1.0 : 1.0;
+    //float signOfAngle =  distanceFrontToWhite>distanceMiddle2White ? -1.0 : 1.0;
     if (inMiddle){
       //println("In Middle, heading diff", degrees(headingDifferenceWithTrack));
       steeringAngleSet(headingDifferenceWithTrack);
     }
     else{
       //println("Not in Middle, heading diff", degrees(signOfAngle*(-HALF_PI+(headingDifferenceWithTrack)/2.0)));
-      steeringAngleSet(signOfAngle*(-HALF_PI+(headingDifferenceWithTrack)/2.0));
+      steeringAngleSet((distanceFrontToWhite>distanceMiddle2White ? -1.0 : 1.0)*(-HALF_PI+(headingDifferenceWithTrack)/2.0));
     }  
   }
 
