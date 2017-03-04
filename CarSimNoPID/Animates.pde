@@ -156,10 +156,10 @@ class Car{
       velocitySet(intoJumpVelocity);
       jumping = false;
     }
-    if(jumpStatus != -1){  // POP! we are airborne!
+    if(jumpStatus==1){  // POP! we are airborne!
       steeringAngularVelocitySet(0);
       steeringAngleSet(0);
-      // no steering during the air time or into the jump!
+      // no steering during the air time!
       return;
     }
     // if inMiddle, turn the steering to the opposite of the angular differnce,
