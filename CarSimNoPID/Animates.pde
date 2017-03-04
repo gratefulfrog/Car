@@ -167,11 +167,11 @@ class Car{
     float signOfAngle =  distanceFrontToWhite>=distanceMiddle2White ? -1.0 : 1.0;
     if (inMiddle){
       //println("In Middle, heading diff", degrees(headingDifferenceWithTrack));
-      steeringAngleSet(signOfAngle*abs(headingDifferenceWithTrack));
+      steeringAngleSet(headingDifferenceWithTrack);
     }
     else{
-      //println("Not in Middle, heading diff", degrees(headingDifferenceWithTrack));
-      steeringAngleSet(signOfAngle*(-HALF_PI+(headingDifferenceWithTrack)/2.0)); //*(velocity/100.0)));
+      //println("Not in Middle, heading diff", degrees(signOfAngle*(-HALF_PI+(headingDifferenceWithTrack)/2.0)));
+      steeringAngleSet(signOfAngle*(-HALF_PI+(headingDifferenceWithTrack)/2.0));
     }  
   }
 
