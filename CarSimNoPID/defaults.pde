@@ -54,7 +54,7 @@ class defaults{
     sensorHalfWidth = 1.5 * (trackBlackWidth + 2*trackWhiteWidth);
     sensorInterceptHalfLength = carWidth/4.0;
     
-    trackerMiddleEpsilon = 20 * mm2pix;
+    trackerMiddleEpsilon = 25 * mm2pix;
     
     Jumplength = 450 * mm2pix;
     JumpSpeed = 800;
