@@ -1,6 +1,6 @@
 #include "App.h"
           
-App::App(Defaults &df): car(*(new Car(df))){
+App::App(): car(*(new Car())){
 }
 
 bool App::setManualSteering(bool setIt = true){

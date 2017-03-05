@@ -6,8 +6,7 @@
 
 #include "App.h"
 
-Defaults &defaults =  *(new Defaults());
-App &app = *(new App(defaults));
+App &app = *(new App());
 
 unsigned long millisLoopMinTime =0,
               lastActionTime = 0;

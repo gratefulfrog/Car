@@ -10,7 +10,7 @@ class App{
     bool manualSteering = false;
 
   public:
-    App::App(Defaults &df);
+    App::App();
     bool setManualSteering(bool setIt = true);  
     void mainLoop(unsigned long dt); //milliseconds
 };
