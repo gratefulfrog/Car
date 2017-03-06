@@ -21,12 +21,12 @@ import oscP5.*;
 KetaiBluetooth bt;
 KetaiList connectionList;
 
-PVector remoteCursor = new PVector();
-
 String info = "",
        UIText;
 
 boolean isConfiguring = true;
+
+
 
 public void settings(){
   fullScreen();
@@ -71,36 +71,18 @@ void draw(){
   else{  // done configuring!
     background(78, 93, 75);
     pushStyle();
-    fill(255);
-    //ellipse(mouseX, mouseY, 50, 50);
-    fill(0, 255, 0);
-    stroke(0, 255, 0);
-    //ellipse(remoteCursor.x, remoteCursor.y, 50, 50);
+    textSize(36);
+    String s = nf(lastSentV,0);
+    text(s, width/2.0,height/3.0);
     popStyle();
     }
   drawUI();
 }
 
-int lastSent = 0;
-/*
-void mouseDragged(){
-  if (isConfiguring)
-    return;
-  lastSent ^=1;
-  OscMessage m = new OscMessage("/led");
-  m.add(lastSent);
-  println("Sending:");
-  println(m.toString());
-  bt.broadcast(m.getBytes());
-  // use writeToDevice(String _devName, byte[] data) to target a specific device
-  
-  //ellipse(mouseX, mouseY, 20, 20);
-}
-*/
 void onBluetoothDataEvent(String who, byte[] data){
   if (isConfiguring)
     return;
-    
+  /*  
   KetaiOSCMessage m = new KetaiOSCMessage(data);
   if (m.isValid()){
     if (m.checkAddrPattern("/remoteMouse/")){
@@ -110,6 +92,7 @@ void onBluetoothDataEvent(String who, byte[] data){
       }
     }
   }
+  */
 }
 
 String getBluetoothInformation(){

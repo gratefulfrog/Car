@@ -1,3 +1,5 @@
+int lastSentV = 0;
+
 void mousePressed(){
   if (mouseY <= 100 && mouseX > 0 && mouseX < width/3)
     KetaiKeyboard.toggle(this);
@@ -12,56 +14,9 @@ void mousePressed(){
   else{
     if (isConfiguring)
       return;
-    OscMessage m = new OscMessage("/led");
-    lastSent ^=1;
-    m.add(lastSent);
-    print("Sending: ");
-    println(m.get(0).intValue());
-    println(m.toString());
-    //bt.broadcast(m.getBytes());
-    sendSLIP(m.getBytes());
+    lastSentV ^=1;
+    sendIntViaOsc(lastSentV);
   }
-}
-// Serial & OSC Stuff
-final int END = 0300;
-final int ESC = 0333;
-final int ESC_END = 0334;
-final int ESC_ESC = 0335;  
-
-
-
-// magical SLIP to Serial converter!
-void sendSLIP(byte[] packet) { 
-  //device.write(END);
-  byte out[] = new byte[1];
-  out[0]=(byte)END;
-  bt.broadcast(out);
-  for (int i=0; i<packet.length; i++) {
-    switch (packet[i]) {
-      case (byte)END:
-      case (byte)ESC:
-        //device.write(ESC);
-        //device.write(ESC_END);
-        out[0] = (byte)ESC;
-        bt.broadcast(out);
-        out[0] = (byte)ESC_END;
-        bt.broadcast(out);
-        break;
-      //case (byte)ESC:
-        //device.write(ESC);
-        //device.write(ESC_END);
-        //break;
-      default:
-        out[0] = packet[i];
-        bt.broadcast(out);
-        //device.write(packet[i]);
-        //println(packet[i]);        
-    }
-  }
-  out[0]=(byte)END;
-  bt.broadcast(out);
-  
-  //device.write(END);
 }
 
 void keyPressed() {
