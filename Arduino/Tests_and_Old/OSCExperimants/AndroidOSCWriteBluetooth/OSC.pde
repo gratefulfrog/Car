@@ -48,4 +48,5 @@ void sendIntViaOsc(int val){
   println(m.get(0).intValue());
   println(m.toString());
   sendSLIP(m.getBytes());
+  println("Sent: " , nbBytes2Send(m.getBytes()), " bytes");
 }
