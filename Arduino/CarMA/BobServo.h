@@ -20,17 +20,22 @@ class BobServo{
     
   public:
     BobServo(int pin, const ServoSpec &spec);
-    setAngle(float angle);                        // degrees
-    setAngularVelocity(float angularVelocity);    // degrees/milli sec
+    setAngleD(float angle);                        // degrees
+    setAngleR(float angle);                        // radians
+    setAngularVelocityD(float angularVelocity);    // degrees/milli sec
+    setAngularVelocityR(float angularVelocity);    // radians/milli sec
     void update(float dt);                        // update angle % dt in milli seconds
     void updateMicros(float dtMicros);            // update angle % dt in MICRO seconds using accumulator
-    void update(float angularVelocity,float dt);  // set velocity before updating angle
+    void updateD(float angularVelocity,float dt);  // set angular velocity in DEGREES before updating angle
+    void updateR(float angularVelocity,float dt);  // set angular velocity in RADIANS before updating angle
     void sweep(int nbLoops);
     void center();
     void goCLim();                                // set to clockwise endpoint
     void goCCLim();                                 // set to counter clockwise endpoint
-    float getCurrentAngle() const;
-    float getCurrentAngularVelocity() const;
+    float getCurrentAngleD() const;
+    float getCurrentAngleR() const;
+    float getCurrentAngularVelocityD() const;
+    float getCurrentAngularVelocityR() const;
     const ServoSpec& getSpec() const;
 };
 

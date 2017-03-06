@@ -2,7 +2,7 @@
 
 void BobServo::goLim(int dir){
   // -1 == Counter Clockwise; 1 == Clockwise
-  setAngle(dir == -1 ? spec.servoCCStopDegrees : spec.servoCStopDegrees);
+  setAngleD(dir == -1 ? spec.servoCCStopDegrees : spec.servoCStopDegrees);
 }
 BobServo::BobServo(int ppin, const ServoSpec &sspec):
                     spec(sspec){
@@ -13,7 +13,7 @@ BobServo::BobServo(int ppin, const ServoSpec &sspec):
   #endif
 }                      
 
-BobServo::setAngle(float angle){  // degrees
+BobServo::setAngleD(float angle){  // degrees
   // first limit the set angle to the burnout limits
   currentAngle = constrain(reduceAngleDegrees(angle), spec.servoCCStopDegrees,spec.servoCStopDegrees);
   float servoUSValue = map(currentAngle,spec.servoCCStopDegrees,spec.servoCStopDegrees,spec.servoMinBurnout,spec.servoMaxBurnout);
@@ -25,16 +25,25 @@ BobServo::setAngle(float angle){  // degrees
   #endif
   servo.writeMicroseconds(servoUSValue);
 }
-float BobServo::getCurrentAngle() const{
+BobServo::setAngleR(float angle){  // radians
+  setAngleD(degrees(angle));
+}
+float BobServo::getCurrentAngleD() const{
   return currentAngle;
 }
-float BobServo::getCurrentAngularVelocity() const{
+float BobServo::getCurrentAngleR() const{
+  return radians(currentAngle);
+}
+float BobServo::getCurrentAngularVelocityD() const{
   return currentAngularVelocity;
+}
+float BobServo::getCurrentAngularVelocityR() const{
+  return radians(currentAngularVelocity);
 }
 const ServoSpec& BobServo::getSpec() const{
   return spec;
 }
-BobServo::setAngularVelocity(float angularVelocity) { // degrees/milli sec
+BobServo::setAngularVelocityD(float angularVelocity) { // degrees/milli sec
   #ifdef DEBUG
     Serial.print("setAngularVelocity called: ");
     Serial.print(angularVelocity);
@@ -44,8 +53,11 @@ BobServo::setAngularVelocity(float angularVelocity) { // degrees/milli sec
   currentAngularVelocity = constrain(angularVelocity,spec.servoCCMinV,spec.servoCMaxV);  
 }
 
+BobServo::setAngularVelocityR(float angularVelocity) { // degrees/milli sec
+ setAngularVelocityD(angularVelocity);
+}
 void BobServo::update(float dt) { // update angle % dt in seconds
-  setAngle(currentAngle + currentAngularVelocity*dt);  
+  setAngleD(currentAngle + currentAngularVelocity*dt);  
    //#ifdef DEBUG
     Serial.print("update called, dt:\t");
     Serial.println(dt);
@@ -60,25 +72,30 @@ void BobServo::updateMicros(float dtMicros){
   float servoDeltaUSValue = map(settingAngle,spec.servoCCStopDegrees,spec.servoCStopDegrees,spec.servoMinBurnout,spec.servoMaxBurnout);
   if (abs(servoDeltaUSValue)>spec.servoDeadBand){
     // then we can do a set!
-    setAngle(currentAngle + settingAngle);
+    setAngleD(currentAngle + settingAngle);
     microSecAccumulator =0;
   }
 }
 
-void BobServo::update(float angularVelocity,float dt){  // set velocity before updating angle
-  setAngularVelocity(angularVelocity);
+void BobServo::updateD(float angularVelocity,float dt){  // set velocity before updating angle
+  setAngularVelocityD(angularVelocity);
   update(dt);
 }
+void BobServo::updateR(float angularVelocity,float dt){  // set velocity before updating angle
+  setAngularVelocityR(angularVelocity);
+  update(dt);
+}
+
 void BobServo::center(){
-  setAngle(0);
-  setAngularVelocity(0);
+  setAngleD(0);
+  setAngularVelocityD(0);
 }
 
 void BobServo::goCLim() { // set to clockwise endpoint
-  setAngle(spec.servoCStopDegrees);
+  setAngleD(spec.servoCStopDegrees);
 }
 void BobServo::goCCLim(){ // set to counter clockwise endpoint
-  setAngle(spec.servoCCStopDegrees);
+  setAngleD(spec.servoCCStopDegrees);
 }
 void BobServo::sweep(int nbLoops){
   const float angleInc = 1,
@@ -89,7 +106,7 @@ void BobServo::sweep(int nbLoops){
       count = 0,
       lim = 2*nbLoops;
   while (count < lim){
-    setAngle(currentAngle + angleInc*currentDirection);
+    setAngleD(currentAngle + angleInc*currentDirection);
     delay(timeOut);
     if (abs(currentAngle)== min(abs(spec.servoCCStopDegrees),abs(spec.servoCStopDegrees))){
        currentDirection *= -1;

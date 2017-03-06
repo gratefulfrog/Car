@@ -1,4 +1,9 @@
 #include "Car.h"
+/* Note: the car works in radians
+ *  and the servo likes degrees,
+ *  try to keep the two straight!
+ */
+
 
 Car::Car (){
   bs = new BobServo(Defaults::servoPin, savoxSpec);
@@ -9,14 +14,14 @@ Car::Car (){
 
 void Car::steeringAngleSet(float a){
   steeringAngle = max(-Defaults::maxSteeringAngle,min(a,Defaults::maxSteeringAngle));
-  bs->setAngle(steeringAngle);
+  bs->setAngleR(steeringAngle);
 }
 void Car::steeringAngleInc(float inc){
   steeringAngleSet(inc+steeringAngle);
 }
 void Car::steeringAngularVelocitySet(float a){
   steeringAngularVelocity = max(-Defaults::maxSteeringAngularVelocity,min(a,Defaults::maxSteeringAngularVelocity));
-  bs->setAngularVelocity(steeringAngularVelocity);
+  bs->setAngularVelocityR(steeringAngularVelocity);
 }
 void Car::steeringAngularVelocityInc(float inc){
   steeringAngularVelocitySet(inc+steeringAngularVelocity);
