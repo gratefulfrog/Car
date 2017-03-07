@@ -3,13 +3,14 @@
 * tested with Processing program SimpleOSCWriteToSerial
 */
 #include <Arduino.h>
-
-#include <OSCMessage.h>
-#include <SLIPEncodedSerial.h>
+#include "MessageMgr.h"
 
 SLIPEncodedSerial SLIPSerial(Serial);
 
+MessageMgr *msgMgr;
+
 void LEDcontrol(OSCMessage &msg){
+  //flashLed(2);
   digitalWrite(13, msg.getInt(0));
 }
 
@@ -27,26 +28,17 @@ void flashLed(int n){
 
 void setup() {
   pinMode(13, OUTPUT);
-  SLIPSerial.begin(115200);
-  while(!Serial);
+  Serial.begin(115200);
+  //msgMgr = new MessageMgr(SLIPSerial,LEDcontrol,115200);
   flashLed(3);  // to indicate ready!
 }
 
 //reads and dispatches the incoming message
 void loop(){ 
-  if (SLIPSerial.available() > 0){
-    OSCMessage msgIN;
-    int size;
-    while(!SLIPSerial.endofPacket()){
-      if( (size =SLIPSerial.available()) > 0){
-          while(size--)
-            msgIN.fill(SLIPSerial.read());
-      }
-    }
-    
-    if(!msgIN.hasError()){
-      msgIN.dispatch("/led", LEDcontrol);
-    }
+  //flashLed(3);
+  if( (Serial.available()) > 0){
+    //msgMgr->stepIncoming();
+    flashLed(2);
   }
 }
 
