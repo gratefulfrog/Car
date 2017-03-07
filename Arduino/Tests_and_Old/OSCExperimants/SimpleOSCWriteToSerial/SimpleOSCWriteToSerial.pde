@@ -71,7 +71,7 @@ void sendSLIP(byte[] packet) {
         break;
       case (byte)ESC:
         device.write(ESC);
-        device.write(ESC_END);
+        device.write(ESC_ESC);
         break;
       default:
         device.write(packet[i]);

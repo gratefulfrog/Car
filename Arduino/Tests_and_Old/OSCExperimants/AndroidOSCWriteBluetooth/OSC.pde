@@ -20,6 +20,7 @@ int nbBytes2Send(byte[] packet) {
   return res;
 }
 
+
 // magical SLIP to Serial converter!
 void sendSLIP(byte[] packet) { 
   //device.write(END);
@@ -29,9 +30,13 @@ void sendSLIP(byte[] packet) {
   for (int i=0; i<packet.length; i++) {
     switch (packet[i]) {
       case (byte)END:
-      case (byte)ESC:
         outgoing[oInd++] = (byte)ESC;
         outgoing[oInd++] = (byte)ESC_END;
+        break;
+      case (byte)ESC:
+        outgoing[oInd++] = (byte)ESC;
+        outgoing[oInd++] = (byte)ESC_ESC;
+        break;
       default:
         outgoing[oInd++] = packet[i];
         break;
