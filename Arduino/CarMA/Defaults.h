@@ -16,7 +16,10 @@ class Defaults{
                        maxSteeringAngle = radians(30),
                        maxSteeringAngularVelocity = radians(150),
                        maxVelocity =  10;  //mm par milli second 
-    static const int   servoPin = 9;
+    static const int   servoPin     = 9,
+                       speedPin     = 11,
+                       heartBeatPin = 12,
+                       speepPin     = 13;
 
     // navigtation constants
     static const float trackerMiddleEpsilon = 50, // mm when less than this dist, we are in the middle
