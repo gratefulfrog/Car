@@ -78,14 +78,7 @@ class AngleControl{
      popStyle();
      popMatrix();
    }
-   /*
-   void update(float mx,float my){
-     // compute new angle and set
-     float angleDegrees = degrees(atan2(y-my,mx-x)) -90,
-           result = constrain(angleDegrees,-displayRangeDegrees/2.0,displayRangeDegrees/2.0); //,-60,60,-displayRangeDegrees/2.0,displayRangeDegrees/2.0);
-     println(angleDegrees, result, degrees(setAngle(radians(result/display2Angle))));
-   }
-   */
+   
     void update(float mx,float my){
      // compute new angle and set
      float angle = (atan2(y-my,mx-x)) -(PI/2.0),
