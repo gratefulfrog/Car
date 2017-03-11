@@ -85,14 +85,8 @@ class Car{
         headingDifferenceWithTrack,
         distanceMiddle2White;
   
-  //boolean inMiddle = false;
-  int currentPositionRelativeToMiddle = 0,  // left is +1, in middle =0, right is -1
-      previousPositionRelativeToMiddle = 0;
-  
-  final float oscillationDampingFactor =  0.45,
-              noOscillationMultiplier  =  1.05,
-              minReturnAngle           =  12.5;
-      
+  boolean inMiddle = false;
+        
   final int nbSensors = 2;
   int li[] = new int[nbSensors],
       ri[] = new int[nbSensors];
@@ -171,40 +165,16 @@ class Car{
     // if inMiddle, turn the steering to the opposite of the angular differnce,
     // else turn the wheels to min( 90-angleDiff/2.0 constrained of course to physical limits
     //float signOfAngle =  distanceFrontToWhite>distanceMiddle2White ? -1.0 : 1.0;
-    /*if (inMiddle){
+    if (inMiddle){
       //println("In Middle, heading diff", degrees(headingDifferenceWithTrack));
       steeringAngleSet(headingDifferenceWithTrack);
     }
     else{
       //println("Not in Middle, heading diff", degrees(signOfAngle*(-HALF_PI+(headingDifferenceWithTrack)/2.0)));
       steeringAngleSet((distanceFrontToWhite>distanceMiddle2White ? -1.0 : 1.0)*(-HALF_PI+(headingDifferenceWithTrack)/2.0));
-    } 
-    */
-    establishSteeringAngle();
+    }  
   }
-  
-  void establishSteeringAngle(){
-    if (currentPositionRelativeToMiddle == 0){
-      steeringAngleSet(headingDifferenceWithTrack);
-      return;
-    }
-    // need a min angle to ensure that we recover distance to middle
-    float minCorrection = radians(minReturnAngle);
-    if (headingDifferenceWithTrack>0){
-      minCorrection = max(minCorrection,headingDifferenceWithTrack);
-    }
-    else{
-      minCorrection = min(-minCorrection,headingDifferenceWithTrack);
-    }
-    // if to the left
-    if (currentPositionRelativeToMiddle > 0){  
-      steeringAngleSet((minCorrection > 0 ? minCorrection : -minCorrection)*(previousPositionRelativeToMiddle<0 ? oscillationDampingFactor : noOscillationMultiplier));
-    }
-    else{
-      steeringAngleSet((minCorrection < 0 ? minCorrection : -minCorrection)*(previousPositionRelativeToMiddle>0 ? oscillationDampingFactor : noOscillationMultiplier));      
-    }
-  }
-  
+
   void display(){
     detectJump();
     
@@ -272,25 +242,11 @@ class Car{
     line(ri[id],yOffset-Defaults.sensorInterceptHalfLength,ri[id],yOffset+Defaults.sensorInterceptHalfLength);
     popStyle();
     distanceFrontToWhite = ri[0];
-    //inMiddle = abs(distanceFrontToWhite-distanceMiddle2White) <= Defaults.trackerMiddleEpsilon;
-    establishPositionRelativeToMiddle();
+    inMiddle = abs(distanceFrontToWhite-distanceMiddle2White) <= Defaults.trackerMiddleEpsilon;
     //println("ri[0], distanceMiddle2White, Defaults.trackerMiddleEpsilon", ri[0], distanceMiddle2White, Defaults.trackerMiddleEpsilon);
     headingDifferenceWithTrack = -atan2(ri[1]-ri[0],B);
   }  
-  void establishPositionRelativeToMiddle(){
-     // left is +1, in middle =0, right is -1
-      previousPositionRelativeToMiddle = currentPositionRelativeToMiddle;
-    if (abs(distanceFrontToWhite-distanceMiddle2White) <= Defaults.trackerMiddleEpsilon){
-      currentPositionRelativeToMiddle = 0;
-    }
-    else if(distanceFrontToWhite>distanceMiddle2White){
-      currentPositionRelativeToMiddle = 1;
-    }
-    else{
-      currentPositionRelativeToMiddle= -1;
-    }
-  }
-  
+    
   void detectJump(){
     color c = get(round(pos[0]),round(pos[1]));
     switch(jumpStatus){
@@ -333,8 +289,7 @@ class Car{
     translate(0,dy);
     text("FrameRate : \t" +round(frameRate),0,0);
     translate(0,dy);
-    //text("In Middle : \t" + inMiddle,0,0);
-    text("% Middle : \t" + currentPositionRelativeToMiddle,0,0);
+    text("In Middle : \t" + inMiddle,0,0);
     translate(0,dy);
     text("Velocity : \t" + round(velocity),0,0);
     translate(0,dy);
